@@ -1,0 +1,8 @@
+/build/
+/config.mk
+/deps/src/
+/deps/build/
+/deps/install/
+*.o
+*.d
+__pycache__/
