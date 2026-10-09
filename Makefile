@@ -73,12 +73,16 @@ LIBHMB    := $(LIB)/libhmb.a
 EXAMPLES      :=
 TESTS         :=
 SCRIPT_CHECKS :=
+# TOOLS: programs that `make` builds and `make check` does not run itself.
+TOOLS         :=
+# INFO_EXTRA: quoted lines that `make info` prints after its own.
+INFO_EXTRA    :=
 
 .DEFAULT_GOAL := all
 
 include $(sort $(wildcard mk/*.mk))
 
-all: $(LIBHMB) $(EXAMPLES) $(TESTS)
+all: $(LIBHMB) $(EXAMPLES) $(TESTS) $(TOOLS)
 
 $(LIBHMB): $(CORE_OBJS)
 	@mkdir -p $(@D)
@@ -103,6 +107,8 @@ info:
 	@echo "disabled:  $(filter-out $(ENABLED),$(LIBRARIES))"
 	@echo "examples:  $(notdir $(EXAMPLES))"
 	@echo "tests:     $(notdir $(TESTS)) $(SCRIPT_CHECKS)"
+	@echo "tools:     $(notdir $(TOOLS))"
+	@printf '%s\n' $(INFO_EXTRA)
 
 clean:
 	rm -rf $(B)

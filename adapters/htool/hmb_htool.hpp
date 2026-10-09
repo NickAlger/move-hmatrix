@@ -20,9 +20,11 @@ struct HtoolOptions {
     double eta = 10;        // admissibility parameter (Htool's default Rjasanow-Steinbach rule)
     int leaf_size = 64;     // maximal leaf cluster size
     char symmetry = 'N';    // 'N' general; 'S' symmetric (stores the lower triangle only)
-    // Htool's default (true) refines the block tree so blocks line up across levels. With
-    // false, dense leaves can sit on non-leaf clusters: such a tree is not "strict", and
-    // H2Lib's H -> H2 conversion silently gives a wrong result on it (GOTCHAS.md).
+    // Htool's default (true) splits both clusters of a block unless one is a leaf. With false,
+    // a block on two non-leaf clusters of different sizes is split on the larger side only,
+    // which H2Lib's H -> H2 conversion cannot take (not a "strict" tree, GOTCHA(strict-tree));
+    // either way, ACA fallbacks leave dense blocks above the leaf level (more with small
+    // leaves). Symmetric storage ('S') needs true.
     bool block_tree_consistency = true;
     bool parallel = false;  // build with Htool's parallel execution policy
 };

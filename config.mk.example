@@ -1,0 +1,89 @@
+# hmatrix-bridges configuration template.
+#
+# The Makefile reads ./config.mk when it exists, otherwise deps/install/config.mk (written by
+# deps/build_deps.sh for the pinned builds; it explains every flag of those builds). To point the
+# package at other builds of the libraries, copy this file to config.mk and edit it, or pass
+# CONFIG=<file> to make.
+#
+# A library is enabled when its <LIB>_CPPFLAGS is non-empty: delete or comment out a section to
+# leave that library (and every route that needs it) out of the build. The active values below
+# are those of an install made by deps/build_deps.sh under deps/install; the "Elsewhere:" lines
+# show typical values for builds installed in system locations (/usr/local, /opt) or left in
+# their source trees. What each build must look like (precision, -D flags, sequential/MPI, ...)
+# is said per library; deps/README.md gives the reasons and the exact build commands.
+
+DEPS_PREFIX := $(CURDIR)/deps/install
+
+# ---- toolchain --------------------------------------------------------------------------------
+# Use the compilers the libraries were built with (C++ ABI, gfortran runtime, OpenMP runtime).
+CC = gcc
+CXX = g++
+FC = gfortran
+OPT = -O2
+OPENMP = -fopenmp
+# BLAS, LAPACK and CBLAS, appended to every link line.
+BLAS_LIBS = -lopenblas
+#   Elsewhere: BLAS_LIBS = -llapack -lblas                  (reference BLAS/LAPACK; no H2Pack then)
+#              BLAS_LIBS = -L/opt/openblas/lib -Wl,-rpath,/opt/openblas/lib -lopenblas
+# LAPACKE (C interface of LAPACK) for hmat-oss, STARS-H and H2Pack; empty if BLAS_LIBS includes it
+# (Debian/Ubuntu's OpenBLAS does not).
+DEPS_LAPACKE_LIBS = -llapacke
+# Python 3 with numpy (tools/h2pack).
+PYTHON = python3
+
+# ---- Htool-DDM 0ee4cac (header-only) ------------------------------------------------------------
+# The directory that contains htool/. Used without MPI.
+HTOOL_CPPFLAGS = -I$(DEPS_PREFIX)/htool/include
+#   Elsewhere: HTOOL_CPPFLAGS = -I/opt/htool/include        (a checkout's include/ directory)
+
+# ---- H2Lib 920662c (community branch), static library ----------------------------------------------
+# -I of H2Lib's Library/ directory (its headers) plus EVERY -D flag libh2.a was compiled with: the
+# scalar type and struct layouts depend on USE_COMPLEX, USE_FLOAT, USE_SIMD, USE_BLAS, USE_OPENMP.
+# Real double precision, built with OPT=1 USE_BLAS=1 USE_OPENMP=1. libh2.a has no -fPIC.
+H2LIB_CPPFLAGS = -I$(DEPS_PREFIX)/h2lib/include -DUSE_BLAS -DUSE_OPENMP -DHARITH_RKMATRIX_QUICK_EXIT
+H2LIB_LIBS = $(DEPS_PREFIX)/h2lib/lib/libh2.a -lgfortran -lm
+#   Elsewhere: H2LIB_CPPFLAGS = -I/opt/H2Lib/Library -DUSE_BLAS -DUSE_OPENMP -DHARITH_RKMATRIX_QUICK_EXIT
+#              H2LIB_LIBS = /opt/H2Lib/libh2.a -lgfortran -lm
+#   (the flags an H2Lib tree compiles with: cd /opt/H2Lib && make -s -f Makefile -f <(printf 'p:\n\t@echo $(CFLAGS)\n') p)
+
+# ---- hmat-oss 45a2fdb, shared library -----------------------------------------------------------------
+# The directory holding hmat/hmat.h and the generated hmat/config.h; -lhmat with an rpath.
+# GPL-2.0-or-later.
+HMAT_CPPFLAGS = -I$(DEPS_PREFIX)/hmat/include
+HMAT_LIBS = -L$(DEPS_PREFIX)/hmat/lib -Wl,-rpath,$(DEPS_PREFIX)/hmat/lib -lhmat
+#   Elsewhere: HMAT_CPPFLAGS = -I/usr/local/include
+#              HMAT_LIBS = -L/usr/local/lib -Wl,-rpath,/usr/local/lib -lhmat
+#   (an uninstalled CMake build: -I<source>/include -I<build directory>, -L<build directory>)
+
+# ---- ButterflyPACK a8cf81b, double precision, sequential ----------------------------------------------
+# The C interface dBPACK_wrapper.h; the double-precision library and the MPI stub of a build with
+# enable_mpi=OFF. Never link the stub into a program that also links a real MPI.
+BPACK_CPPFLAGS = -I$(DEPS_PREFIX)/bpack/include
+BPACK_LIBS = $(DEPS_PREFIX)/bpack/lib/libdbutterflypack.a $(DEPS_PREFIX)/bpack/lib/libmpi_dummy.a -lgfortran -lgomp -lm
+#   Elsewhere (ButterflyPACK's own CMake install, all precisions in one library, enable_mpi=OFF):
+#              BPACK_CPPFLAGS = -I/usr/local/include
+#              BPACK_LIBS = -L/usr/local/lib -lbutterflypack -lmpi_dummy -lgfortran -lgomp -lm
+
+# ---- H2Opus cbc7985 + Thrust 1.17.2, CPU only, double precision -------------------------------------------
+# H2Opus's include directory (with the generated h2opusconf.h), Thrust and CUB. A CPU build
+# (no H2OPUS_USE_GPU, MKL or MPI) compiled with -fopenmp: H2Opus's headers pick Thrust's backend
+# from _OPENMP, so the package must use -fopenmp as well (OPENMP above).
+H2OPUS_CPPFLAGS = -I$(DEPS_PREFIX)/h2opus/include -I$(DEPS_PREFIX)/thrust/include
+H2OPUS_LIBS = $(DEPS_PREFIX)/h2opus/lib/libh2opus.a
+#   Elsewhere: H2OPUS_CPPFLAGS = -I/opt/h2opus/include -I/opt/thrust -I/opt/thrust/dependencies/cub
+#              H2OPUS_LIBS = /opt/h2opus/lib/libh2opus.a
+
+# ---- STARS-H c115e75, static library ------------------------------------------------------------------
+# Built without MPI, StarPU, GSL or CUDA. Its kernels are generated at configure time: check that
+# libstarsh.a defines starsh_ssdata_block_exp_kernel_2d (see deps/README.md).
+STARSH_CPPFLAGS = -I$(DEPS_PREFIX)/starsh/include
+STARSH_LIBS = $(DEPS_PREFIX)/starsh/lib/libstarsh.a $(DEPS_LAPACKE_LIBS) -lgfortran -lm
+#   Elsewhere: STARSH_CPPFLAGS = -I/usr/local/include
+#              STARSH_LIBS = -L/usr/local/lib -lstarsh $(DEPS_LAPACKE_LIBS) -lgfortran -lm
+
+# ---- H2Pack 2aa58a6, static library ---------------------------------------------------------------------
+# Built with src/GCC-OpenBLAS.make (-DUSE_OPENBLAS): needs OpenBLAS in BLAS_LIBS.
+H2PACK_CPPFLAGS = -I$(DEPS_PREFIX)/h2pack/include -DUSE_OPENBLAS
+H2PACK_LIBS = $(DEPS_PREFIX)/h2pack/lib/libH2Pack.a $(DEPS_LAPACKE_LIBS) -lm
+#   Elsewhere: H2PACK_CPPFLAGS = -I/opt/H2Pack/include -DUSE_OPENBLAS
+#              H2PACK_LIBS = /opt/H2Pack/lib/libH2Pack.a $(DEPS_LAPACKE_LIBS) -lm

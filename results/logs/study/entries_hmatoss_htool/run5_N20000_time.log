@@ -1,0 +1,11 @@
+# start after waiting 378s, idle=98% load=0.85 1.02 1.24
+== N=20000 eps_src=1e-06 eps_dst=1e-06 reps=3 sections=1 leaf=64 eta_hmat=2 eta_htool=10 max_threads=2 hmat=1.11.1 htool=1.0.2
+[src] hmat-oss build (seq, ACA+) median wall 3.525 s cpu 3.525 s; stored values 34735098 (277.88 MB, 8.68% of N^2); rk leaves 10960, full leaves 5406 (full values 8248538)
+[src] hmat-oss matvec median wall 0.0359 s cpu 0.0359 s
+[time] threads=1 wall: src matvec 0.0362 s | direct 0.589 s = 16.3 matvecs | transfer 2.523 s = 70.5 matvecs = 4.28x direct = 0.72x src build
+[time] threads=1 cpu:  src matvec 0.0362 s | direct 0.589 s | transfer 2.522 s = 70.5 matvecs = 4.28x direct = 0.72x src build
+[time] threads=2 wall: src matvec 0.0372 s | direct 0.283 s = 7.6 matvecs | transfer 1.292 s = 34.8 matvecs = 4.46x direct = 0.37x src build
+[time] threads=2 cpu:  src matvec 0.0372 s | direct 0.554 s | transfer 2.565 s = 69.0 matvecs = 4.49x direct = 0.73x src build
+[time] htool cluster tree 0.0337 s (shared by both builds)
+[life] after hmat-oss destroy: htool matvec vs src result 1.30e-06
+# end load=0.98 1.04 1.24

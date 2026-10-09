@@ -1,0 +1,25 @@
+N=4000 tile=300 (14 tiles, last 100) eps=1e-06 maxrank=100 threads=1
+Selected backend is OPENMP
+Selected low-rank engine is RSVD
+Selected oversample size 10
+check symm N: export and import                        ok  STARS-H -> neutral view -> H2Opus TLR
+check symm N: H2Opus product = STARS-H product         ok  7.713e-17 <= 1.000e-13
+check symm N: H2Opus A^T = STARS-H BlackBox A^T        ok  1.608e-16 <= 1.000e-13
+check symm N: STARS-H vs kernel (<= 10 eps)            ok  7.092e-07 <= 1.000e-05
+check symm N: H2Opus vs kernel (<= 10 eps)             ok  7.092e-07 <= 1.000e-05
+  symm N: STARS-H build 1.33s (183 far + 13 near tiles, max rank 100), one STARS-H matvec 0.0016s, one H2Opus matvec 0.0017s
+  symm N: export 0.00006s (4572000 values aliased, 0 copied, 0 mirrored tiles), import 0.0181s (4572000 values copied, 1 low-rank diagonal tiles expanded, 0 dense off-diagonal tiles as D*I)
+  symm N: H2Opus stores 4740000 values (14 tiles of 300, padded to 4200), +34872 kB resident; transfer cost 11.17 source matvecs; accuracy STARS-H 7.09e-07, H2Opus 7.09e-07, STARS-H vs H2Opus 7.71e-17
+RESULT copy_tlr_starsh_h2opus symm=N N=4000 tile=300 eps=1e-06 cost_matvecs=11.17 values_copied=4572000 lossless=7.7e-17 err=7.09e-07
+  rebuild from entries in H2Opus (construct_tlr_matrix, eps_abs 2.96e-04): 1.13s = 698 source matvecs, 16000000 entries, max rank 244, accuracy 3.08e-07
+check rebuild from entries vs kernel (<= 10 eps)       ok  3.080e-07 <= 1.000e-05
+check symm S: export and import                        ok  STARS-H -> neutral view -> H2Opus TLR
+check symm S: H2Opus product = STARS-H product         ok  7.713e-17 <= 1.000e-13
+check symm S: H2Opus A^T = STARS-H BlackBox A^T        ok  7.713e-17 <= 1.000e-13
+check symm S: STARS-H vs kernel (<= 10 eps)            ok  7.102e-07 <= 1.000e-05
+check symm S: H2Opus vs kernel (<= 10 eps)             ok  7.102e-07 <= 1.000e-05
+  symm S: STARS-H build 0.71s (92 far + 13 near tiles, max rank 100), one STARS-H matvec 0.0013s, one H2Opus matvec 0.0018s
+  symm S: export 0.00005s (2881000 values aliased, 0 copied, 91 mirrored tiles), import 0.0120s (2881000 values copied, 1 low-rank diagonal tiles expanded, 0 dense off-diagonal tiles as D*I)
+  symm S: H2Opus stores 3000000 values (14 tiles of 300, padded to 4200), +22112 kB resident; transfer cost 9.40 source matvecs; accuracy STARS-H 7.10e-07, H2Opus 7.10e-07, STARS-H vs H2Opus 7.71e-17
+RESULT copy_tlr_starsh_h2opus symm=S N=4000 tile=300 eps=1e-06 cost_matvecs=9.40 values_copied=2881000 lossless=7.7e-17 err=7.10e-07
+HMB_TEST_PASSED copy_tlr_starsh_h2opus: 11 checks; N=4000 tile=300 eps=1e-06

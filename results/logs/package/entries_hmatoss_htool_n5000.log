@@ -1,0 +1,27 @@
+== N=5000 eps_src=1e-06 eps_dst=1e-06 reps=3 leaf=64 eta_hmat=2 eta_htool=10 max_threads=2
+[src] hmat-oss build (sequential) 0.887 s; stored values 6345950 (50.77 MB, 25.38% of N^2); 2704 low-rank + 1296 dense leaves; matvec 0.0066 s
+[time] threads=1: src matvec 0.0068 s | direct 0.119 s = 17.5 matvecs | transfer 0.460 s = 67.3 matvecs = 3.85x direct = 0.52x src build
+[time] threads=2: src matvec 0.0066 s | direct 0.062 s = 9.4 matvecs | transfer 0.240 s = 36.4 matvecs = 3.86x direct = 0.27x src build
+[count] direct   calls row/col 76230, block 1009 | entries 7578628 (30.31% of N^2, 1.194x src stored, 1.001x dst stored) | ns per entry row/col 4.7, block 3.3 | up to 2 concurrent calls
+[dst] direct   2649 low-rank + 1009 dense leaves, max rank 23, stored 7568254 (1.193x src)
+[count] transfer calls row/col 80000, block 1016 | entries 7973445 (31.89% of N^2, 1.256x src stored, 1.003x dst stored) | ns per entry row/col 53.6, block 15.6 | up to 2 concurrent calls
+[dst] transfer 2642 low-rank + 1016 dense leaves, max rank 26, stored 7952659 (1.253x src)
+[mem] transfer build: RSS +43824 kB, peak +43824 kB; destination 63621 kB, source 50768 kB
+check transfer requests fewer than N^2 entries         ok  31.9% of N^2
+check source served concurrent requests                ok  up to 2
+[acc] ||y_a - y_b|| / ||y_b||, 3 random vectors: transfer vs src 9.36e-07 | transfer vs exact 1.09e-06 | src vs exact 7.03e-07 | direct vs exact 5.57e-07 | transfer vs direct 1.14e-06
+check transfer vs source <= 10 eps_dst                 ok  9.360e-07 <= 1.000e-05
+check transfer vs kernel <= 10 eps_dst                 ok  1.087e-06 <= 1.000e-05
+check source vs kernel <= 10 eps_src                   ok  7.032e-07 <= 1.000e-05
+check direct vs kernel <= 10 eps_dst                   ok  5.565e-07 <= 1.000e-05
+check 1-thread and multi-thread transfer identical     ok  2 threads
+[tol] eps_src -> eps_dst: error vs kernel | entries requested (x src stored) | dst stored | build time
+[tol]  1e-06 -> 1e-06: 1.09e-06 | 7973445 (1.26x) | 7952659 | 0.255 s   (same tolerance)
+[tol]  1e-08 -> 1e-06: 5.53e-07 | 7581912 (1.19x) | 7571538 | 0.259 s   (source 100x tighter)
+[tol]  1e-06 -> 1e-08: 7.03e-07 | 21412557 (3.37x) | 17022715 | 0.626 s   (destination 100x tighter)
+[tol] kernel -> 1e-06: 5.57e-07 | 7578628 (1.19x) | 7568254 | 0.073 s   (direct build from the kernel)
+check same tolerance: less accurate than the source    ok  1.09e-06 vs source 7.03e-07 (1.55x)
+check source 100x tighter: same as the direct build    ok  error 5.53e-07 vs 5.57e-07, entries 1.000x
+check destination 100x tighter: dearer, no gain        ok  2.69x the entries, error 7.03e-07 (source 7.03e-07)
+check transfer independent of the source               ok  hmat-oss matrix destroyed: yes
+HMB_TEST_PASSED entries_hmatoss_htool: 11 checks; N=5000 transfer 67.3 source matvecs, error 9.36e-07 vs source

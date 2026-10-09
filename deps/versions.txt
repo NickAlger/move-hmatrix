@@ -1,0 +1,23 @@
+# hmatrix-bridges: pinned third-party libraries. deps/build_deps.sh reads the repository and
+# commit of each line from this file, checks out exactly that commit and verifies it (and the
+# commit date given here). To move a library to another commit, edit its line and re-run the
+# script: the library is rebuilt, and deps/README.md says what to re-check.
+#
+# Fields, separated by '|':
+#   id | library | repository | commit | commit date (committer, UTC offset dropped) | licence | build options
+# id names the library for --only and its directories deps/src/<id>, deps/build/<id> and
+# <prefix>/<id>. Lines with an id "<parent>:<path>" are git submodules: they are fetched at the
+# revision their parent commit records, and the script checks that it is the one listed here.
+# Licences were read from each repository's LICENSE/COPYING file at the pinned commit.
+#
+htool  | Htool-DDM     | https://github.com/htool-ddm/htool            | 0ee4cacabec0045ede8d6602587e8864433c5000 | 2026-10-06 | MIT | header-only: include/htool copied, nothing compiled; used without MPI
+h2lib  | H2Lib         | https://github.com/H2Lib/H2Lib                | 920662c7302def7285c5e9a34d919a25f079a640 | 2020-02-13 | LGPL-3.0 | branch "community"; H2Lib make, target libh2.a, options.inc OPT=1 USE_BLAS=1 USE_OPENMP=1 HARITH_RKMATRIX_QUICK_EXIT=1 with system.inc.linux (gcc -Wall -O3 -march=native -funroll-loops -fopenmp); static, no -fPIC
+hmat   | hmat-oss      | https://github.com/jeromerobert/hmat-oss      | 45a2fdb31083a837898d69c230b29d3bcea177ab | 2026-09-25 | GPL-2.0-or-later | CMake Release (-O3 -DNDEBUG), BUILD_SHARED_LIBS=ON, BUILD_EXAMPLES=OFF, HMAT_GIT_VERSION=OFF, HMAT_DISABLE_OPENMP=ON (default), OpenBLAS thread switching compiled out (HAVE_OPENBLAS_SET_NUM_THREADS=OFF, HAVE_GOTO_GET_NUM_PROCS=OFF); shared libhmat.so
+bpack  | ButterflyPACK | https://github.com/liuyangzhuan/ButterflyPACK | a8cf81b9a2c95260931580f395db98bd6a2f319c | 2026-09-17 | BSD-3-Clause (LBNL variant, license.txt) | CMake enable_mpi=OFF (MPI_DUMMY stub), enable_openmp=ON, BUILD_SHARED_LIBS=OFF, CMAKE_BUILD_TYPE=None with -O2 for C, C++ and Fortran; targets dbutterflypack and mpi_dummy only, archived as libdbutterflypack.a (double precision) + libmpi_dummy.a; -UHAVE_OPENBLAS_BATCH when the BLAS has no cblas_dgemm_batch; example data (EXAMPLE/*_DATA, 415 MB) not checked out
+h2opus | H2Opus        | https://github.com/ecrc/h2opus                | cbc7985d9716e015c019003073a6f1f5c53dd2fc | 2022-10-17 | BSD-3-Clause | H2Opus make with a generated make.inc: CPU only (no GPU, MAGMA, MKL, MPI), double, CXXFLAGS -O2 -fopenmp -std=c++14 -fPIC -w (no H2OPUS_PROFILING_ENABLED), H2OPUS_FMANGLE_TYPE=add, Thrust OpenMP backend; static libh2opus.a
+thrust | Thrust        | https://github.com/NVIDIA/thrust              | 1ac51f2b6219ff17d15d93f2e0be85038556f346 | 2022-09-13 | Apache-2.0 (parts BSL-1.0 and BSD-2-Clause, see LICENSE) | tag 1.17.2, header-only: thrust/ and cub/ copied to <prefix>/thrust/include; the CPU backend of H2Opus, built with h2opus
+thrust:dependencies/cub | CUB (Thrust submodule) | https://github.com/NVIDIA/cub | c493b3bf143ccd66c917a1982ea64bb2a8a82932 | 2022-09-13 | BSD-3-Clause | header-only
+starsh | STARS-H       | https://github.com/ecrc/stars-h               | c115e756553ed683d9f4b63204e68f4b93e133a5 | 2023-11-20 | BSD-3-Clause | CMake Release (-O3 -DNDEBUG), OPENMP=ON, MPI=OFF, STARPU=OFF, GSL=OFF, CUDA=OFF, KBLAS=OFF, BLA_VENDOR=Open (OpenBLAS), EXAMPLES=OFF, TESTING=OFF, DOCS=OFF; static libstarsh.a; SARS-CoV-2-meshes (113 MB) not checked out
+starsh:cmake_modules/ecrc | ecrc_cmake (STARS-H submodule) | https://github.com/ecrc/ecrc_cmake | dc49b699ad71d526045125f8406d4569db05bfd0 | 2022-12-01 | CeCILL-C | CMake modules used by STARS-H's configure step
+h2pack | H2Pack        | https://github.com/scalable-matrix/H2Pack     | 2aa58a62fa69b7a353e352e9df4ba39ce569bb05 | 2026-09-20 | MIT | H2Pack make, src/GCC-OpenBLAS.make (gcc -Wall -g -std=gnu11 -O3 -fPIC -fopenmp -march=native -DUSE_OPENBLAS); static libH2Pack.a, plus examples/meta_json_to_txt.py and meta_txt_to_json.py; needs OpenBLAS (openblas_set_num_threads)
+h2pack:src/ASTER | ASTER (H2Pack submodule) | https://github.com/huanghua1994/ASTER | 9bf3b072517bf156d6aa41bd3f1c045ac54eb7d9 | 2021-02-04 | MIT | header-only SIMD wrappers, installed with H2Pack's headers

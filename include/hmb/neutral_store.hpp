@@ -17,6 +17,14 @@ struct NeutralStore {
     std::deque<std::vector<double>> data;   // owned leaf data; deque keeps addresses stable
     hmb_hmatrix A{};
 
+    NeutralStore() = default;
+    // A copy's view and leaf pointers would still point into the original: no copies. Moves
+    // keep the vectors' and the deque's elements in place, so the view stays valid.
+    NeutralStore(const NeutralStore &) = delete;
+    NeutralStore &operator=(const NeutralStore &) = delete;
+    NeutralStore(NeutralStore &&) = default;
+    NeutralStore &operator=(NeutralStore &&) = default;
+
     double *alloc(std::size_t n) {
         data.emplace_back(n);
         return data.back().data();

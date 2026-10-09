@@ -1,0 +1,29 @@
+== matvec_htool_bpack n=4000 eps=1e-06 tol=1e-06 leaf=64 eta=10 reps=1 OMP_NUM_THREADS=1
+[source] Htool build 0.043s, 2923530 stored values (23.4 MB, 0.183 of n^2), max rank 19
+[source] one matvec: 0.00329s single vector, 0.00044s per vector in blocks of 64
+[source] error against the kernel 8.123e-07
+[HODLR matvec tol 1e-06] 3.613s (init 0.004s) = 1097 source matvecs; 52 calls (17 A^T, 33%), 4060 vectors (1.01 n; 1990 A^T); in source 1.978s (= 1.10 x vectors x blocked cost), adapter copies 0.107s; rank 232; heap 37.5 MB, peak +111.3 MB, ButterflyPACK Mem_Fill 35.6 MB (no low-rank blocks for H); error vs source 4.33e-06 (adapter's check_error 3.44e-06), vs kernel 4.38e-06
+[H matvec tol 1e-06] 5.010s (init 0.010s) = 1522 source matvecs; 260 calls (116 A^T, 45%), 7062 vectors (1.77 n; 2680 A^T); in source 3.311s (= 1.06 x vectors x blocked cost), adapter copies 0.098s; rank 17; heap 71.3 MB, peak +76.4 MB, ButterflyPACK Mem_Fill 13.4 MB (no low-rank blocks for H); error vs source 5.25e-06 (adapter's check_error 4.46e-06), vs kernel 5.27e-06
+[H matvec tol/10 tol 1e-07] 4.776s (init 0.010s) = 1450 source matvecs; 196 calls (84 A^T, 43%), 6136 vectors (1.53 n; 2217 A^T); in source 3.002s (= 1.11 x vectors x blocked cost), adapter copies 0.095s; rank 25; heap 83.0 MB, peak +87.8 MB, ButterflyPACK Mem_Fill 13.4 MB (no low-rank blocks for H); error vs source 9.86e-07 (adapter's check_error 7.74e-07), vs kernel 1.27e-06
+[HODLR entries tol 1e-06] 1.846s (init 0.003s) = 561 source matvecs; 15562016 entries (0.97 n^2) in 940 calls; rank 198; heap 34.3 MB, peak +87.4 MB, ButterflyPACK Mem_Fill 32.4 MB; error vs source 2.53e-06, vs kernel 2.40e-06
+[H entries tol 1e-06] 1.844s (init 0.011s) = 560 source matvecs; 40484452 entries (2.53 n^2) in 10572 calls; rank 18; heap 73.6 MB, peak +73.3 MB, ButterflyPACK Mem_Fill 33.7 MB; error vs source 9.12e-07, vs kernel 4.25e-07
+
+RESULT n=4000 eps=1e-06 tol=1e-06 t_src_mv1=0.00329 t_src_mv64_per_vector=0.00044 src_build=0.043 src_err=8.12e-07
+construction          tol  calls(T)   vectors   seconds    x mv1   err_src  err_kern     rank   heap MB   peak MB
+HODLR matvec        1e-06    52(17)      4060     3.613     1097  4.33e-06  4.38e-06      232      37.5     111.3
+H matvec            1e-06  260(116)      7062     5.010     1522  5.25e-06  5.27e-06       17      71.3      76.4
+H matvec tol/10     1e-07   196(84)      6136     4.776     1450  9.86e-07  1.27e-06       25      83.0      87.8
+HODLR entries       1e-06         -  15562016     1.846      561  2.53e-06  2.40e-06      198      34.3      87.4
+H entries           1e-06         -  40484452     1.844      560  9.12e-07  4.25e-07       18      73.6      73.3
+(vectors column: sampling vectors for the matvec route, entries for the entry route; x mv1: construction time / one single-vector source matvec)
+
+check HODLR matvec: error vs source <= 20 x tol        ok  4.330e-06 <= 2.000e-05
+check HODLR matvec: A^T asked, answered with 'N' (symmetric) ok  17 requests, 0 'T' calls to Htool
+check H matvec: error vs source <= 100 x tol           ok  5.250e-06 <= 1.000e-04
+check H matvec: A^T asked, answered with 'N' (symmetric) ok  116 requests, 0 'T' calls to Htool
+check H matvec tol/10: error vs source <= 100 x tol    ok  9.858e-07 <= 1.000e-05
+check H matvec tol/10: A^T asked, answered with 'N' (symmetric) ok  84 requests, 0 'T' calls to Htool
+check HODLR entries: error vs kernel <= 10 x tol       ok  2.402e-06 <= 1.000e-05
+check H entries: error vs kernel <= 10 x tol           ok  4.253e-07 <= 1.000e-05
+tolerance stacking: H at tol 1e-06 reached 5.25e-06 (5.2 x tol); at tol 1e-07, 9.86e-07 (1.0 x the first tol)
+HMB_TEST_PASSED matvec_htool_bpack: 8 checks; n=4000 tol=1e-06

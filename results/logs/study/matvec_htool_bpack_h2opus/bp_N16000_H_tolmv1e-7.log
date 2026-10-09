@@ -1,0 +1,11 @@
+== drv_bp N=16000 eps=1e-06 tol_mv=1e-07 reps=3 routes=me eta=10 leaf=64 near_para=2 rank0=-1 rankrate=2 src_sym=S threads=1
+[source] htool build 0.234s  stored=16100549 doubles (128.80 MB, 0.0629 of N^2)  dense=1298 lowrank=2639 rankmax=21  rss+124.7MB
+[source] matvec time: k=1 0.0250s | k=16 0.0650s (0.00406/vec) | k=64 0.1730s (0.00270/vec)
+[source] err vs exact kernel sum: 1.081e-06  (exact sum 0.9s)
+[H matvec rep 0] init 0.059s compute 50.474s (callback 34.536s, of which source matvec 33.683s) calls=361 (T:166) vectors=10021 kmax=63 peak+462.5MB retained_heap=443.0MB Mem_Fill=56.8MB rankmax=25
+[H matvec rep 1] init 0.050s compute 50.241s (callback 34.307s, of which source matvec 33.459s) calls=355 (T:164) vectors=10027 kmax=63 peak+468.0MB retained_heap=452.2MB Mem_Fill=56.8MB rankmax=25
+[H matvec rep 2] init 0.052s compute 50.880s (callback 34.620s, of which source matvec 33.764s) calls=367 (T:169) vectors=10183 kmax=63 peak+465.9MB retained_heap=450.1MB Mem_Fill=56.8MB rankmax=25
+[H element rep 0] init 0.046s compute 13.871s entries=259984430 (1.02 N^2) peak+392.3MB retained_heap=374.9MB Mem_Fill=184.1MB rankmax=21
+[H element rep 1] init 0.048s compute 13.623s entries=259840430 (1.02 N^2) peak+390.8MB retained_heap=374.9MB Mem_Fill=184.1MB rankmax=21
+[H element rep 2] init 0.048s compute 13.501s entries=259840430 (1.02 N^2) peak+390.8MB retained_heap=374.9MB Mem_Fill=184.1MB rankmax=21
+RESULT format=H N=16000 eps=1e-06 tol_mv=1e-07 rank0=21 rankrate=2 calls=367 callsT=169 vectors=10183 vec_per_N=0.6364 t_mv_compute=50.474 t_mv_init=0.052 t_callback=34.536 t_in_src=33.683 t_el_compute=13.623 t_el_init=0.048 t_src_mv1=0.02497 t_src_mv64pv=0.00270 t_src_build=0.234 ratio_mv_over_srcmv1=2021.5 ratio_mv_over_el=3.71 ratio_el_over_srcmv1=545.6 ratio_mv_over_srcbuild=215.7 err_mv_vs_src=3.196e-06 err_el_vs_src=1.187e-06 err_mv_vs_exact=3.362e-06 err_el_vs_exact=4.973e-07 err_src_vs_exact=1.081e-06 memfill_mv_MB=56.76 memfill_el_MB=184.11 heap_mv_MB=450.10 heap_el_MB=374.88 src_MB=128.80 peak_mv_MB=465.9 peak_el_MB=390.8 entries_el=259840430 glue_copied_values=325856000

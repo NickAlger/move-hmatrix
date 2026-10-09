@@ -22,6 +22,10 @@ HtoolHandle htool_build(const EntrySource &entries, int dim, const double *coord
         throw std::invalid_argument("hmb::htool_build: square matrices only (rows and columns share one tree)");
     if (opt.symmetry != 'N' && opt.symmetry != 'S')
         throw std::invalid_argument("hmb::htool_build: symmetry must be 'N' or 'S'");
+    if (opt.symmetry == 'S' && !opt.block_tree_consistency)
+        // GOTCHA(htool-sym-inconsistent): Htool only logs an error, and its products then omit
+        // the missing triangle (67% error at N = 2,000)
+        throw std::invalid_argument("hmb::htool_build: symmetry 'S' needs block_tree_consistency");
     const int n = entries.n_rows;
     auto h = std::make_shared<HtoolMatrix>();
     h->symmetry = opt.symmetry;

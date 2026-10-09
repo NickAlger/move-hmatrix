@@ -13,6 +13,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <functional>
 #include <numeric>
 #include <random>
 #include <string>
@@ -117,6 +118,34 @@ struct Problem {
         return b;
     }
 };
+
+// Recursive coordinate bisection of the problem's points: perm[k] = original index at
+// position k, so that every contiguous range of positions is a compact group of points.
+// Formats without a cluster tree of their own (tile low-rank) need such an ordering for
+// their tiles to be compressible.
+inline std::vector<int> bisection_perm(const Problem &P, int leaf) {
+    std::vector<int> p(P.n);
+    std::iota(p.begin(), p.end(), 0);
+    std::function<void(int, int)> rec = [&](int lo, int hi) {
+        if (hi - lo <= leaf) return;
+        double mn[3] = {1e300, 1e300, 1e300}, mx[3] = {-1e300, -1e300, -1e300};
+        for (int k = lo; k < hi; k++)
+            for (int d = 0; d < 3; d++) {
+                mn[d] = std::min(mn[d], P.xyz[3 * size_t(p[k]) + d]);
+                mx[d] = std::max(mx[d], P.xyz[3 * size_t(p[k]) + d]);
+            }
+        int d = 0;
+        for (int e = 1; e < 3; e++)
+            if (mx[e] - mn[e] > mx[d] - mn[d]) d = e;
+        const int mid = lo + (hi - lo) / 2;
+        std::nth_element(p.begin() + lo, p.begin() + mid, p.begin() + hi,
+                         [&](int a, int b) { return P.xyz[3 * size_t(a) + d] < P.xyz[3 * size_t(b) + d]; });
+        rec(lo, mid);
+        rec(mid, hi);
+    };
+    rec(0, P.n);
+    return p;
+}
 
 // ---------------------------------------------------------------------------------------
 // Measurement helpers

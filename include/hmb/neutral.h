@@ -21,7 +21,9 @@
  *    bl[sons[son0 + i + j * rsons]]. A side that is split uses all sons of its cluster:
  *    rsons == cl[rc].nsons and child (i, j) has rc == cl[rc].son0 + i. A side that is not
  *    split has rsons == 1 and the children keep the parent's cluster. Same for columns.
- *    Every block is reached from bl[0] exactly once.
+ *    Over a cluster with a single son both have rsons == 1: the children's cluster (the
+ *    son, or the parent itself) tells them apart (H2Lib's regular clustering makes such
+ *    clusters). Every block is reached from bl[0] exactly once.
  *  - An HMB_LOWRANK leaf of size rows x cols is
  *      U * V    (vtrans == 0: V is rank x cols, leading dimension ldV), or
  *      U * V^T  (vtrans == 1: V is cols x rank, leading dimension ldV),
@@ -60,7 +62,7 @@ typedef struct {
 } hmb_block;
 
 typedef struct {
-  int dim;                 /* spatial dimension of the bounding boxes (0 if none) */
+  int dim;                 /* spatial dimension of the bounding boxes, 0 to 3 (0 if none) */
   int n_rows, n_cols;
   const int *row_perm, *col_perm; /* perm[k] = original index at permuted position k */
   int row_root, col_root;  /* cluster ids of the two roots (equal if the tree is shared) */
@@ -97,7 +99,8 @@ void hmb_matvec(const hmb_hmatrix *A, char trans, int nrhs,
  * column-major, leading dimension ldo. The request is split down the block tree, so the
  * cost is about (m + n) * depth plus a dot product of length rank for each entry that
  * falls in a low-rank leaf. Computes the inverse permutations on each call (O(n_rows +
- * n_cols)); for many small requests, compute them once and use hmb_entries_ip. */
+ * n_cols)); for many small requests, compute them once and use hmb_entries_ip. An index
+ * outside the matrix is a caller bug: reported on stderr, then abort(). */
 void hmb_entries(const hmb_hmatrix *A, int m, const int *rows, int n, const int *cols,
                  double *out, int ldo);
 
@@ -105,7 +108,8 @@ void hmb_entries(const hmb_hmatrix *A, int m, const int *rows, int n, const int 
  * (icol, length n_cols). Either pointer may be NULL to skip it. */
 void hmb_inverse_perms(const hmb_hmatrix *A, int *irow, int *icol);
 
-/* hmb_entries with precomputed inverse permutations (from hmb_inverse_perms). */
+/* hmb_entries with precomputed inverse permutations (from hmb_inverse_perms). irow (icol)
+ * may be NULL only when row_perm (col_perm) is NULL; otherwise the call aborts. */
 void hmb_entries_ip(const hmb_hmatrix *A, const int *irow, const int *icol, int m, const int *rows,
                     int n, const int *cols, double *out, int ldo);
 

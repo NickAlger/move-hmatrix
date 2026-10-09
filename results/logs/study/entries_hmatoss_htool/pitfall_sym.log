@@ -1,0 +1,2 @@
+lower_symmetric=0: get_values rc=0, entries left unwritten 0 of 4000000 (0.0%), max rel err of written entries 4.40e-05
+lower_symmetric=1: get_values rc=0, entries left unwritten 1937496 of 4000000 (48.4%), max rel err of written entries 3.49e-05

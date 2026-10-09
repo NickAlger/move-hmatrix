@@ -1,0 +1,4 @@
+== drv_bp N=4000 eps=1e-06 tol_mv=1e-06 reps=1 routes=m eta=10 leaf=64 near_para=2 rank0=32 rankrate=1.2 src_sym=S threads=1
+[source] htool build 0.044s  stored=2923530 doubles (23.39 MB, 0.1827 of N^2)  dense=316 lowrank=714 rankmax=19  rss+23.1MB
+[source] matvec time: k=1 0.0029s | k=16 0.0065s (0.00041/vec) | k=64 0.0256s (0.00040/vec)
+ randomized scheme not converged. level:            1  rank:         167  L_butt:           0  error:   3.0767314635670205E-005

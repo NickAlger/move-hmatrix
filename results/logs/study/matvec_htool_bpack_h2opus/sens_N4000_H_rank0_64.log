@@ -1,0 +1,10 @@
+== drv_bp N=4000 eps=1e-06 tol_mv=1e-07 reps=3 routes=me eta=10 leaf=64 near_para=2 rank0=64 rankrate=2 src_sym=S threads=1
+[source] htool build 0.044s  stored=2923530 doubles (23.39 MB, 0.1827 of N^2)  dense=316 lowrank=714 rankmax=19  rss+23.2MB
+[source] matvec time: k=1 0.0029s | k=16 0.0068s (0.00042/vec) | k=64 0.0258s (0.00040/vec)
+[H matvec rep 0] init 0.011s compute 4.610s (callback 2.965s, of which source matvec 2.870s) calls=199 (T:85) vectors=6209 kmax=65 peak+90.4MB retained_heap=82.7MB Mem_Fill=13.4MB rankmax=26
+[H matvec rep 1] init 0.011s compute 4.064s (callback 2.615s, of which source matvec 2.539s) calls=196 (T:84) vectors=6050 kmax=65 peak+86.4MB retained_heap=82.6MB Mem_Fill=13.4MB rankmax=26
+[H matvec rep 2] init 0.011s compute 4.287s (callback 2.752s, of which source matvec 2.668s) calls=196 (T:84) vectors=5986 kmax=65 peak+85.9MB retained_heap=82.1MB Mem_Fill=13.4MB rankmax=24
+[H element rep 0] init 0.010s compute 2.104s entries=40484452 (2.53 N^2) peak+74.1MB retained_heap=69.6MB Mem_Fill=33.7MB rankmax=18
+[H element rep 1] init 0.012s compute 2.052s entries=40484452 (2.53 N^2) peak+73.4MB retained_heap=69.6MB Mem_Fill=33.7MB rankmax=18
+[H element rep 2] init 0.010s compute 2.132s entries=40484452 (2.53 N^2) peak+73.4MB retained_heap=69.6MB Mem_Fill=33.7MB rankmax=18
+RESULT format=H N=4000 eps=1e-06 tol_mv=1e-07 rank0=64 rankrate=2 calls=196 callsT=84 vectors=5986 vec_per_N=1.4965 t_mv_compute=4.287 t_mv_init=0.011 t_callback=2.752 t_in_src=2.668 t_el_compute=2.104 t_el_init=0.010 t_src_mv1=0.00293 t_src_mv64pv=0.00040 t_src_build=0.044 ratio_mv_over_srcmv1=1465.5 ratio_mv_over_el=2.04 ratio_el_over_srcmv1=719.4 ratio_mv_over_srcbuild=96.6 err_mv_vs_src=1.168e-06 err_el_vs_src=9.124e-07 err_mv_vs_exact=-1.000e+00 err_el_vs_exact=-1.000e+00 err_src_vs_exact=-1.000e+00 memfill_mv_MB=13.43 memfill_el_MB=33.69 heap_mv_MB=82.11 heap_el_MB=69.57 src_MB=23.39 peak_mv_MB=85.9 peak_el_MB=73.4 entries_el=40484452 glue_copied_values=47888000

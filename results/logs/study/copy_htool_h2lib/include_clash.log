@@ -1,0 +1,7 @@
+### htool headers first (both.cpp):
+0
+### H2Lib headers first (both2.cpp):
+../H2Lib/Library/settings.h:200:11: error: expected unqualified-id before numeric constant
+../H2Lib/Library/settings.h:200:11: error: expected identifier before numeric constant
+../H2Lib/Library/settings.h:200:11: error: expected '{' before numeric constant
+/root/deepdive/htool/src/htool/include/htool/hmatrix/./interfaces/../../basic_types/vector.hpp:204:45: error: invalid types 'double[const int]' for array subscript

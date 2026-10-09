@@ -1,0 +1,11 @@
+== drv_bp N=16000 eps=1e-06 tol_mv=1e-06 reps=3 routes=me eta=10 leaf=64 near_para=2 rank0=-1 rankrate=2 src_sym=S threads=1
+[source] htool build 0.231s  stored=16100549 doubles (128.80 MB, 0.0629 of N^2)  dense=1298 lowrank=2639 rankmax=21  rss+124.6MB
+[source] matvec time: k=1 0.0298s | k=16 0.0672s (0.00420/vec) | k=64 0.1701s (0.00266/vec)
+[source] err vs exact kernel sum: 1.081e-06  (exact sum 0.9s)
+[HODLR matvec rep 0] init 0.015s compute 41.291s (callback 23.712s, of which source matvec 22.770s) calls=70 (T:23) vectors=8122 kmax=513 peak+845.1MB retained_heap=381.2MB Mem_Fill=262.0MB rankmax=426
+[HODLR matvec rep 1] init 0.016s compute 39.923s (callback 23.114s, of which source matvec 22.216s) calls=70 (T:23) vectors=8106 kmax=513 peak+848.6MB retained_heap=380.0MB Mem_Fill=260.8MB rankmax=423
+[HODLR matvec rep 2] init 0.015s compute 40.642s (callback 23.350s, of which source matvec 22.450s) calls=70 (T:23) vectors=8146 kmax=513 peak+864.3MB retained_heap=382.3MB Mem_Fill=263.2MB rankmax=428
+[HODLR element rep 0] init 0.016s compute 24.412s entries=106456064 (0.42 N^2) peak+372.1MB retained_heap=229.3MB Mem_Fill=235.1MB rankmax=349
+[HODLR element rep 1] init 0.016s compute 24.028s entries=105784064 (0.41 N^2) peak+382.2MB retained_heap=229.3MB Mem_Fill=235.1MB rankmax=349
+[HODLR element rep 2] init 0.016s compute 24.195s entries=107080064 (0.42 N^2) peak+393.6MB retained_heap=229.3MB Mem_Fill=235.1MB rankmax=349
+RESULT format=HODLR N=16000 eps=1e-06 tol_mv=1e-06 rank0=64 rankrate=2 calls=70 callsT=23 vectors=8146 vec_per_N=0.5091 t_mv_compute=40.642 t_mv_init=0.015 t_callback=23.350 t_in_src=22.450 t_el_compute=24.195 t_el_init=0.016 t_src_mv1=0.02977 t_src_mv64pv=0.00266 t_src_build=0.231 ratio_mv_over_srcmv1=1365.4 ratio_mv_over_el=1.68 ratio_el_over_srcmv1=812.8 ratio_mv_over_srcbuild=175.8 err_mv_vs_src=7.379e-06 err_el_vs_src=3.738e-06 err_mv_vs_exact=7.430e-06 err_el_vs_exact=3.587e-06 err_src_vs_exact=1.081e-06 memfill_mv_MB=263.20 memfill_el_MB=235.12 heap_mv_MB=382.35 heap_el_MB=229.33 src_MB=128.80 peak_mv_MB=864.3 peak_el_MB=393.6 entries_el=107080064 glue_copied_values=260672000

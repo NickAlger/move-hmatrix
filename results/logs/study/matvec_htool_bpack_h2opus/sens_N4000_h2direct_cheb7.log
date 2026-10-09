@@ -1,0 +1,5 @@
+== drv_h2 N=4000 eps=1e-06 reps=1 eta=10 leaf=64 h2eta=1 maxs=512 cheb=7
+[source] htool build 0.041s stored=2923530 doubles (23.39 MB) rankmax=19
+[source] matvec time: k=1 0.0029s | k=32 0.0118s (0.00037/vec)
+[direct rep 0] buildHMatrix(cheb 7^3) 1.795s (mem 1189.43MB) horthog+hcompress 3.917s mem=24.52MB peak+2802.8MB
+[direct acc] err_vs_src=2.591e-05 err_vs_exact=-1.000e+00

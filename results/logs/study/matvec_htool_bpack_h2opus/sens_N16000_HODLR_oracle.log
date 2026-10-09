@@ -1,0 +1,10 @@
+== drv_bp N=16000 eps=1e-06 tol_mv=1e-06 reps=3 routes=me eta=10 leaf=64 near_para=2 rank0=445 rankrate=2 src_sym=S threads=1
+[source] htool build 0.224s  stored=16100549 doubles (128.80 MB, 0.0629 of N^2)  dense=1298 lowrank=2639 rankmax=21  rss+124.8MB
+[source] matvec time: k=1 0.0190s | k=16 0.0572s (0.00358/vec) | k=64 0.1588s (0.00248/vec)
+[HODLR matvec rep 0] init 0.014s compute 31.620s (callback 16.999s, of which source matvec 16.318s) calls=52 (T:17) vectors=5988 kmax=446 peak+779.4MB retained_heap=360.8MB Mem_Fill=257.8MB rankmax=412
+[HODLR matvec rep 1] init 0.015s compute 34.124s (callback 18.079s, of which source matvec 17.369s) calls=52 (T:17) vectors=6280 kmax=446 peak+809.8MB retained_heap=376.3MB Mem_Fill=273.8MB rankmax=426
+[HODLR matvec rep 2] init 0.015s compute 33.484s (callback 17.823s, of which source matvec 17.117s) calls=52 (T:17) vectors=6244 kmax=446 peak+805.9MB retained_heap=374.0MB Mem_Fill=271.4MB rankmax=423
+[HODLR element rep 0] init 0.015s compute 24.288s entries=106168064 (0.41 N^2) peak+349.7MB retained_heap=229.3MB Mem_Fill=235.1MB rankmax=349
+[HODLR element rep 1] init 0.017s compute 24.180s entries=107128064 (0.42 N^2) peak+404.9MB retained_heap=229.3MB Mem_Fill=235.1MB rankmax=349
+[HODLR element rep 2] init 0.015s compute 24.718s entries=105640064 (0.41 N^2) peak+411.2MB retained_heap=229.3MB Mem_Fill=235.1MB rankmax=349
+RESULT format=HODLR N=16000 eps=1e-06 tol_mv=1e-06 rank0=445 rankrate=2 calls=52 callsT=17 vectors=6244 vec_per_N=0.3902 t_mv_compute=33.484 t_mv_init=0.015 t_callback=17.823 t_in_src=17.117 t_el_compute=24.288 t_el_init=0.015 t_src_mv1=0.01905 t_src_mv64pv=0.00248 t_src_build=0.224 ratio_mv_over_srcmv1=1758.1 ratio_mv_over_el=1.38 ratio_el_over_srcmv1=1275.3 ratio_mv_over_srcbuild=149.4 err_mv_vs_src=1.163e-05 err_el_vs_src=3.738e-06 err_mv_vs_exact=-1.000e+00 err_el_vs_exact=-1.000e+00 err_src_vs_exact=-1.000e+00 memfill_mv_MB=271.43 memfill_el_MB=235.12 heap_mv_MB=374.03 heap_el_MB=229.34 src_MB=128.80 peak_mv_MB=805.9 peak_el_MB=411.2 entries_el=105640064 glue_copied_values=199808000

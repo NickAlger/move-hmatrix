@@ -1,0 +1,32 @@
+== drv_bp N=16000 eps=1e-06 tol_mv=1e-06 reps=1 routes=m eta=10 leaf=64 near_para=2 rank0=-1 rankrate=2 src_sym=S threads=1
+[source] htool build 0.253s  stored=16100549 doubles (128.80 MB, 0.0629 of N^2)  dense=1298 lowrank=2639 rankmax=21  rss+124.6MB
+[HODLR matvec rep 0] init 0.016s compute 40.009s (callback 23.020s, of which source matvec 22.082s) calls=70 (T:23) vectors=8094 kmax=513 peak+828.9MB retained_heap=379.1MB Mem_Fill=259.8MB rankmax=423
+ OMP_NUM_THREADS=           1
+ BPACK_BUTTERFLY_SOLVER
+    
+ User-supplied kernel:
+ User-supplied kernel requiring reorder:
+     
+ Hierarchical format......
+ 
+ Maxlevel_for_blocks:           8
+ N_leaf:          62
+ 
+ Constructing basis groups...
+ Hierarchical format finished
+     
+ FastMATVEC-based Matrix construction......
+    Level     1 rank:   65 Ntrial:  1 L_butt:  0 error: 4.8509509E-03 #sample:   65
+    Level     1 rank:  129 Ntrial:  2 L_butt:  0 error: 1.5795414E-03 #sample:  129
+    Level     1 rank:  257 Ntrial:  3 L_butt:  0 error: 1.3208685E-04 #sample:  257
+    Level     1 rank:  423 Ntrial:  4 L_butt:  0 error: 1.2160470E-06 #sample:  513
+    Level     2 rank:  227 Ntrial:  1 L_butt:  0 error: 1.0751788E-06 #sample:  424
+    Level     3 rank:  121 Ntrial:  1 L_butt:  0 error: 1.8684402E-06 #sample:  228
+    Level     4 rank:  100 Ntrial:  1 L_butt:  0 error: 3.9653353E-06 #sample:  122
+    Level     5 rank:   71 Ntrial:  1 L_butt:  0 error: 5.9526179E-06 #sample:  101
+    Level     6 rank:   47 Ntrial:  1 L_butt:  0 error: 7.2644158E-06 #sample:   72
+    Level     7 rank:   37 Ntrial:  1 L_butt:  0 error: 1.1129894E-05 #sample:   48
+    Level     8 rank:   28 Ntrial:  1 L_butt:  0 error: 1.7354522E-05 #sample:   38
+    Level     9 fullmat done
+ rankmax_of_level:           0         423         227         121         100          71          47          37          28
+ FastMATVEC-based Matrix construction finished   40.008999999998196      secnds. Error:    6.2845615959209210E-006 Total #sample:         1997

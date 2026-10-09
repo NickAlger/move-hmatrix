@@ -1,0 +1,88 @@
+# N=20000 eps=1e-06 eta=10 leaf=64 h2eps[0]=1e-06 consistent_tree=1 reps=3 mvreps=7 OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=1 H2_PARDEPTH=0
+#   runs htool_build_seq: 0.5804 0.6069 0.5178
+#   runs htool_build_par: 0.5080 0.5866 0.5239
+htool_build_seq_s = 0.5804
+htool_build_par_s = 0.5239
+htool_build_entries = 39336068 (0.10 N^2)
+htool_compression_ratio = 10.168785
+htool_dense_leaves = 4512
+htool_lowrank_leaves = 10588
+htool_false_positives = 0
+htool_matvec_seq_s = 0.040589
+htool_matvec_par_s = 0.042648
+htool_err_vs_dense = 1.211e-06
+dense_directsum_s = 1.282
+#   runs export: 0.0038 0.0041 0.0021
+export_s = 0.003757
+clusters = 1023
+blocks = 20133
+leaves_dense = 4512
+leaves_lowrank = 10588
+rank_mean = 12.29
+rank_max = 21
+source_values = 39336068 (dense 6885728, lowrank 32450340) = 314.7 MB
+strict_violations_dense_nonleaf = 0
+strict_violations_unsplit_nonleaf = 0
+import_clusters_s = 0.000190
+perm_ints_copied = 20000
+#   runs copy: 0.0737 0.0909 0.0895
+[copy] import_s = 0.089514
+[copy] values_copied = 39336068 (1.000 x source)
+[copy] h2lib_bytes = 316722712 (near 55230208 far 260365056) = 1.006 x source bytes
+[copy] rss_extra_MB = 300.9
+[copy] peak_extra_MB = 300.9
+[copy] leaves dense=4512 lowrank=10588
+[copy] h2lib_matvec_s = 0.035792
+[copy] h2lib_vs_htool = 1.408e-15
+[copy] h2lib_vs_dense = 1.211e-06
+#   runs borrow: 0.0967 0.0432 0.0370
+[borrow] import_s = 0.043203
+[borrow] values_copied = 16225170 (0.412 x source)
+[borrow] h2lib_bytes = 131835528 (near 144384 far 130563696) = 0.419 x source bytes
+[borrow] rss_extra_MB = 126.3
+[borrow] peak_extra_MB = 126.3
+[borrow] leaves dense=4512 lowrank=10588
+[borrow] h2lib_matvec_s = 0.034712
+[borrow] h2lib_vs_htool = 1.408e-15
+[borrow] h2lib_vs_dense = 1.211e-06
+#   runs strict: 0.1645 0.0985 0.0892
+[strict] import_s = 0.098493
+[strict] values_copied = 39336068 (1.000 x source)
+[strict] h2lib_bytes = 316722712 (near 55230208 far 260365056) = 1.006 x source bytes
+[strict] rss_extra_MB = 302.8
+[strict] peak_extra_MB = 302.8
+[strict] leaves dense=4512 lowrank=10588
+[strict] h2lib_matvec_s = 0.034542
+[strict] h2lib_vs_htool = 1.408e-15
+[strict] h2lib_vs_dense = 1.211e-06
+norm2_H = 1.697585e+04
+{copy h2eps=1e-06} h2_convert_s = 2.6146 (runs: 2.615 2.550 2.621)
+{copy h2eps=1e-06} h2_convert_parts_s rowbasis=1.130 colbasis=1.191 projection=0.365
+{copy h2eps=1e-06} h2_bytes = 114700760 (near 55230208 far 58343104) = 0.364 x H source bytes
+{copy h2eps=1e-06} h2_rank_sum row=45808 col=45808 kmax row=34 col=34
+{copy h2eps=1e-06} h2_matvec_s = 0.016779
+{copy h2eps=1e-06} h2_vs_htool = 5.350e-07
+{copy h2eps=1e-06} h2_vs_dense = 1.305e-06
+{copy h2eps=1e-06} h2_spectral_rel_diff_vs_H = 4.543e-08 (power it., 2.24 s)
+{copy h2eps=0.0001} h2_convert_s = 1.8254 (runs: 1.802 1.825 1.841)
+{copy h2eps=0.0001} h2_bytes = 75721448 (near 55230208 far 19363792) = 0.241 x H source bytes
+{copy h2eps=0.0001} h2_rank_sum row=34697 col=34697 kmax row=18 col=18
+{copy h2eps=0.0001} h2_matvec_s = 0.010617
+{copy h2eps=0.0001} h2_vs_htool = 4.189e-05
+{copy h2eps=0.0001} h2_vs_dense = 4.195e-05
+{copy h2eps=0.0001} h2_spectral_rel_diff_vs_H = 4.681e-06 (power it., 1.88 s)
+{copy h2eps=1e-08} h2_convert_s = 3.7814 (runs: 3.787 3.781 3.662)
+{copy h2eps=1e-08} h2_bytes = 191110648 (near 55230208 far 134752992) = 0.607 x H source bytes
+{copy h2eps=1e-08} h2_rank_sum row=59082 col=59082 kmax row=56 col=56
+{copy h2eps=1e-08} h2_matvec_s = 0.025297
+{copy h2eps=1e-08} h2_vs_htool = 5.577e-09
+{copy h2eps=1e-08} h2_vs_dense = 1.211e-06
+{copy h2eps=1e-08} h2_spectral_rel_diff_vs_H = 4.170e-10 (power it., 2.50 s)
+#   runs reassembly: 0.5115 0.5086 0.5600
+h2lib_reassembly_s = 0.5115
+h2lib_reassembly_entries = 37876483 (0.09 N^2)
+h2lib_reassembly_vs_dense = 1.176e-06
+h2lib_reassembly_bytes = 317050416
+process_peak_rss_MB = 1237.8
+# done
+exit=0

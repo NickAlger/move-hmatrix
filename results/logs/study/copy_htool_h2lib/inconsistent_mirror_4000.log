@@ -1,0 +1,62 @@
+# N=4000 eps=1e-06 eta=10 leaf=64 h2eps[0]=1e-06 consistent_tree=0 reps=1 mvreps=7 OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=1 H2_PARDEPTH=0
+#   runs htool_build_seq: 0.0689
+#   runs htool_build_par: 0.0795
+htool_build_seq_s = 0.0689
+htool_build_par_s = 0.0795
+htool_build_entries = 5597044 (0.35 N^2)
+htool_compression_ratio = 2.858652
+htool_dense_leaves = 568
+htool_lowrank_leaves = 1428
+htool_false_positives = 0
+htool_matvec_seq_s = 0.003671
+htool_matvec_par_s = 0.008009
+htool_err_vs_dense = 7.595e-07
+dense_directsum_s = 0.050
+#   runs export: 0.0003
+export_s = 0.000324
+clusters = 127
+blocks = 2663
+leaves_dense = 568
+leaves_lowrank = 1428
+rank_mean = 12.87
+rank_max = 19
+source_values = 5597044 (dense 2219504, lowrank 3377540) = 44.8 MB
+strict_violations_dense_nonleaf = 0
+strict_violations_unsplit_nonleaf = 3
+import_clusters_s = 0.000036
+perm_ints_copied = 4000
+#   runs copy: 0.0147
+[copy] import_s = 0.014658
+[copy] values_copied = 5597044 (1.000 x source)
+[copy] h2lib_bytes = 45046472 (near 17774208 far 27123136) = 1.006 x source bytes
+[copy] rss_extra_MB = 42.7
+[copy] peak_extra_MB = 42.7
+[copy] leaves dense=568 lowrank=1428
+[copy] h2lib_matvec_s = 0.003841
+[copy] h2lib_vs_htool = 1.014e-15
+[copy] h2lib_vs_dense = 7.595e-07
+#   runs borrow: 0.0075
+[borrow] import_s = 0.007466
+[borrow] values_copied = 1688770 (0.302 x source)
+[borrow] h2lib_bytes = 13780280 (near 18176 far 13612976) = 0.308 x source bytes
+[borrow] rss_extra_MB = 13.2
+[borrow] peak_extra_MB = 13.2
+[borrow] leaves dense=568 lowrank=1428
+[borrow] h2lib_matvec_s = 0.003511
+[borrow] h2lib_vs_htool = 1.014e-15
+[borrow] h2lib_vs_dense = 7.595e-07
+#   runs strict: 0.0178
+[strict] import_s = 0.017781
+[strict] values_copied = 5597044 (1.000 x source)
+[strict] h2lib_bytes = 45046360 (near 17774208 far 27123136) = 1.006 x source bytes
+[strict] rss_extra_MB = 43.1
+[strict] peak_extra_MB = 43.1
+[strict] leaves dense=568 lowrank=1428
+[strict] h2lib_matvec_s = 0.003087
+[strict] h2lib_vs_htool = 1.014e-15
+[strict] h2lib_vs_dense = 7.595e-07
+norm2_H = 3.411780e+03
+{copy h2eps=1e-06} h2_convert_s = 0.2506 (runs: 0.251)
+{copy h2eps=1e-06} h2_convert_parts_s rowbasis=0.113 colbasis=0.116 projection=0.030
+transfer: Library/avector.c:42: init_sub_avector: Assertion `off + dim <= src->dim' failed.
+exit=134

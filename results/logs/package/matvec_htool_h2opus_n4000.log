@@ -1,0 +1,14 @@
+== matvec_htool_h2opus n=4000 eps=1e-06 tol=1e-06 leaf=64 eta=10 h2eta=1 max_samples=512 reps=1 OMP_NUM_THREADS=1
+[source] Htool build 0.039s, 2923530 stored values (23.4 MB), max rank 19
+[source] one matvec: 0.00314s single vector, 0.00038s per vector in blocks of 32 (HARA's block)
+[source] error against the kernel 8.123e-07
+[HARA run 0] structure 0.008s, norm estimate 0.029s (8 calls), hara 8.501s; in source 1.016s; 75 calls, 2065 vectors
+[HARA tol 1e-06] 8.538s = 2717 source matvecs; 75 calls (8 for the norm), 2065 vectors (0.52 n); in source 1.016s (12% of the time, 1.29 x vectors x blocked cost), adapter copies 0.034s; norm estimate 3.4018e+03, absolute tolerance 3.402e-03; depth 7, max rank 33; H2Opus memory 27.3 MB, retained heap 26.7 MB, peak +241.1 MB; error vs source 2.10e-06 (adapter's check_error 1.68e-06), vs kernel 2.21e-06
+
+RESULT route=HARA n=4000 eps=1e-06 tol=1e-06 calls=75 vectors=2065 vec_per_n=0.5162 seconds=8.538 t_src_mv1=0.00314 ratio_over_srcmv1=2717 err_vs_src=2.100e-06 err_vs_kernel=2.211e-06 src_err=8.123e-07 memory_mb=27.26 heap_mb=26.7 peak_mb=241.1
+
+check HARA: error vs source <= 20 x tol                ok  2.100e-06 <= 2.000e-05
+check HARA: error vs kernel <= 20 x tol + 2 x source error ok  2.211e-06 <= 2.162e-05
+check HARA never asked for A^T                         ok  0
+check HARA sampled the source                          ok  75 calls
+HMB_TEST_PASSED matvec_htool_h2opus: 4 checks; n=4000 tol=1e-06

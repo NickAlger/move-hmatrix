@@ -1,0 +1,21 @@
+== N=5000 eps_src=1e-06 eps_dst=1e-06 reps=3 leaf=64 eta_hmat=2 eta_htool=10 max_threads=2 hmat=1.11.1 htool=1.0.2
+[src] hmat-oss build (seq, ACA+) median 0.878 s; stored values 6345950 (50.77 MB, 25.38% of N^2); rk leaves 2704, full leaves 1296
+[src] hmat-oss matvec median 0.0069 s
+[mem] transfer build: RSS before 62228 kB, after 125360 kB (+63132 kB), peak 125360 kB (+63132 kB over before); dst stored 7952659 values = 63621 kB; src stored 50768 kB
+[time] threads=1: htool direct build (kernel) median 0.094 s = 13.6 src matvecs; transfer build (hmat entries) median 0.446 s = 64.2 src matvecs = 4.73x direct; src build 0.878 s
+[time] threads=2: htool direct build (kernel) median 0.049 s = 7.1 src matvecs; transfer build (hmat entries) median 0.245 s = 35.4 src matvecs = 5.00x direct; src build 0.878 s
+[time] htool cluster tree 0.0060 s (shared by both builds; hmat-oss cluster tree not timed)
+[count] threads=1 direct    calls rowcol=76230 block=1009 | entries rowcol=6039247 block=1539381 total=7578628 (30.31% of N^2, 1.19x src stored, 1.00x dst stored) | cost/entry rowcol=4.8 ns block=3.2 ns | time in callback 0.034 s | max concurrent calls=1, calls overlapping another=0
+[count] threads=1 transfer  calls rowcol=80000 block=1016 | entries rowcol=6423339 block=1550106 total=7973445 (31.89% of N^2, 1.26x src stored, 1.00x dst stored) | cost/entry rowcol=52.7 ns block=16.4 ns | time in callback 0.364 s | max concurrent calls=1, calls overlapping another=0
+[dst] threads=1 direct:   lr=2649 dense=1009 stored=7568254 (1.19x src) rank mean 14.3 max 23 false_pos=7
+[dst] threads=1 transfer: lr=2642 dense=1016 stored=7952659 (1.25x src) rank mean 15.0 max 26 false_pos=14
+[count] threads=2 direct    calls rowcol=76230 block=1009 | entries rowcol=6039247 block=1539381 total=7578628 (30.31% of N^2, 1.19x src stored, 1.00x dst stored) | cost/entry rowcol=4.5 ns block=3.3 ns | time in callback 0.032 s | max concurrent calls=2, calls overlapping another=22625
+[count] threads=2 transfer  calls rowcol=80000 block=1016 | entries rowcol=6423339 block=1550106 total=7973445 (31.89% of N^2, 1.26x src stored, 1.00x dst stored) | cost/entry rowcol=51.7 ns block=12.3 ns | time in callback 0.351 s | max concurrent calls=2, calls overlapping another=62513
+[dst] threads=2 direct:   lr=2649 dense=1009 stored=7568254 (1.19x src) rank mean 14.3 max 23 false_pos=7
+[dst] threads=2 transfer: lr=2642 dense=1016 stored=7952659 (1.25x src) rank mean 15.0 max 26 false_pos=14
+[thread] transfer build threads=2 vs 1: leaf mismatches=0 (max concurrent get_values=2, overlapping calls=63178)
+[thread] transfer build threads=4 vs 1: leaf mismatches=0 (max concurrent get_values=4, overlapping calls=80214)
+[thread] transfer build threads=8 vs 1: leaf mismatches=0 (max concurrent get_values=8, overlapping calls=80775)
+[acc] max over 3 random vectors of ||y_a - y_b||/||y_b||: transfer vs src 1.27e-06 | transfer vs exact 1.41e-06 | src vs exact 8.41e-07 | htool-direct vs exact 7.72e-07 | transfer vs htool-direct 1.49e-06  (exact O(N^2) matvec 0.06 s; htool seq matvec 0.0088 s = 1.27 src matvecs)
+[dense] ||.||_F rel (max-entry rel): transfer vs src 1.04e-06 (7.84e-06) | transfer vs exact 1.17e-06 (7.84e-06) | src vs exact 6.70e-07 (1.66e-06); full N^2 extraction via glue 0.81 s = 32.5 ns/entry = 117.3 src matvecs
+[life] after hmat-oss destroy: htool matvec still matches src result: 1.27e-06

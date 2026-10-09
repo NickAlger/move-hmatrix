@@ -1,0 +1,19 @@
+== N=20000 eps_src=1e-06 eps_dst=1e-06 reps=3 leaf=64 eta_hmat=2 eta_htool=10 max_threads=2
+[src] hmat-oss build (sequential) 3.674 s; stored values 34735098 (277.88 MB, 8.68% of N^2); 10960 low-rank + 5406 dense leaves; matvec 0.0378 s
+[time] threads=1: src matvec 0.0357 s | direct 0.649 s = 18.2 matvecs | transfer 2.694 s = 75.5 matvecs = 4.15x direct = 0.73x src build
+[time] threads=2: src matvec 0.0352 s | direct 0.357 s = 10.1 matvecs | transfer 1.386 s = 39.3 matvecs = 3.88x direct = 0.38x src build
+[count] direct   calls row/col 300464, block 4428 | entries 43135495 (10.78% of N^2, 1.242x src stored, 1.002x dst stored) | ns per entry row/col 4.3, block 4.0 | up to 2 concurrent calls
+[dst] direct   10510 low-rank + 4428 dense leaves, max rank 25, stored 43070173 (1.240x src)
+[count] transfer calls row/col 316144, block 4436 | entries 46179783 (11.54% of N^2, 1.329x src stored, 1.002x dst stored) | ns per entry row/col 52.0, block 14.8 | up to 2 concurrent calls
+[dst] transfer 10502 low-rank + 4436 dense leaves, max rank 30, stored 46102548 (1.327x src)
+[mem] transfer build: RSS +317336 kB, peak +317336 kB; destination 368820 kB, source 277881 kB
+check transfer requests fewer than N^2 entries         ok  11.5% of N^2
+check source served concurrent requests                ok  up to 2
+[acc] ||y_a - y_b|| / ||y_b||, 3 random vectors: transfer vs src 1.38e-06 | transfer vs exact 1.53e-06 | src vs exact 8.61e-07 | direct vs exact 8.53e-07 | transfer vs direct 1.63e-06
+check transfer vs source <= 10 eps_dst                 ok  1.380e-06 <= 1.000e-05
+check transfer vs kernel <= 10 eps_dst                 ok  1.530e-06 <= 1.000e-05
+check source vs kernel <= 10 eps_src                   ok  8.608e-07 <= 1.000e-05
+check direct vs kernel <= 10 eps_dst                   ok  8.533e-07 <= 1.000e-05
+check 1-thread and multi-thread transfer identical     ok  2 threads
+check transfer independent of the source               ok  hmat-oss matrix destroyed: yes
+HMB_TEST_PASSED entries_hmatoss_htool: 8 checks; N=20000 transfer 75.5 source matvecs, error 1.38e-06 vs source

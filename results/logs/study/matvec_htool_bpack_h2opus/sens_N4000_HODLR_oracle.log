@@ -1,0 +1,10 @@
+== drv_bp N=4000 eps=1e-06 tol_mv=1e-06 reps=3 routes=me eta=10 leaf=64 near_para=2 rank0=240 rankrate=2 src_sym=S threads=1
+[source] htool build 0.043s  stored=2923530 doubles (23.39 MB, 0.1827 of N^2)  dense=316 lowrank=714 rankmax=19  rss+23.2MB
+[source] matvec time: k=1 0.0034s | k=16 0.0075s (0.00047/vec) | k=64 0.0288s (0.00045/vec)
+[HODLR matvec rep 0] init 0.003s compute 2.846s (callback 1.526s, of which source matvec 1.447s) calls=40 (T:13) vectors=3268 kmax=241 peak+110.4MB retained_heap=50.3MB Mem_Fill=36.4MB rankmax=231
+[HODLR matvec rep 1] init 0.003s compute 2.871s (callback 1.557s, of which source matvec 1.480s) calls=40 (T:13) vectors=3268 kmax=241 peak+110.0MB retained_heap=50.3MB Mem_Fill=36.4MB rankmax=231
+[HODLR matvec rep 2] init 0.003s compute 2.796s (callback 1.494s, of which source matvec 1.422s) calls=40 (T:13) vectors=3252 kmax=241 peak+112.0MB retained_heap=50.0MB Mem_Fill=36.1MB rankmax=231
+[HODLR element rep 0] init 0.003s compute 1.993s entries=15562016 (0.97 N^2) peak+63.3MB retained_heap=31.5MB Mem_Fill=32.4MB rankmax=198
+[HODLR element rep 1] init 0.003s compute 1.962s entries=15562016 (0.97 N^2) peak+61.0MB retained_heap=31.5MB Mem_Fill=32.4MB rankmax=198
+[HODLR element rep 2] init 0.003s compute 1.921s entries=15562016 (0.97 N^2) peak+57.0MB retained_heap=31.5MB Mem_Fill=32.4MB rankmax=198
+RESULT format=HODLR N=4000 eps=1e-06 tol_mv=1e-06 rank0=240 rankrate=2 calls=40 callsT=13 vectors=3252 vec_per_N=0.8130 t_mv_compute=2.846 t_mv_init=0.003 t_callback=1.526 t_in_src=1.447 t_el_compute=1.962 t_el_init=0.003 t_src_mv1=0.00335 t_src_mv64pv=0.00045 t_src_build=0.043 ratio_mv_over_srcmv1=848.8 ratio_mv_over_el=1.45 ratio_el_over_srcmv1=585.2 ratio_mv_over_srcbuild=65.7 err_mv_vs_src=6.397e-06 err_el_vs_src=2.530e-06 err_mv_vs_exact=-1.000e+00 err_el_vs_exact=-1.000e+00 err_src_vs_exact=-1.000e+00 memfill_mv_MB=36.15 memfill_el_MB=32.36 heap_mv_MB=50.03 heap_el_MB=31.53 src_MB=23.39 peak_mv_MB=112.0 peak_el_MB=57.0 entries_el=15562016 glue_copied_values=26016000

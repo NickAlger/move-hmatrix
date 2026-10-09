@@ -1,0 +1,16 @@
+# LeakSanitizer suppressions for leaks inside the libraries (not the package's memory).
+# tests/run_tests.sh uses this file automatically when LSAN_OPTIONS is not set; by hand:
+#   LSAN_OPTIONS=suppressions=$PWD/tests/lsan.supp ASAN_OPTIONS=fast_unwind_on_malloc=0
+# (fast_unwind_on_malloc=0 because libstarsh.a has no frame pointers.)
+
+# hmat-oss 45a2fdb, GOTCHA(hmat-node-leak): every HMatrix node allocates an
+# FPCompressionSettings in LocalSettings (h_matrix.hpp:85) that ~HMatrix never frees,
+# 16 bytes per block-tree node, both for assembled and for deserialized matrices.
+leak:hmat::HMatrix<*>::HMatrix
+leak:hmat::HMatrix<*>::unmarshall
+
+# STARS-H c115e75, GOTCHA(starsh-false-far-leak): 104 bytes (an Array header with its shape
+# and stride) per far-field block in starsh_blrm__drsdd[_omp] whenever a tile needs more
+# than maxrank ("false far-field" tiles): the reshuffle that drops them re-creates the
+# remaining headers over the old ones without freeing them (src/backends/*/blrm/drsdd.c).
+leak:starsh_blrm__drsdd

@@ -13,6 +13,7 @@
 #include <htool/hmatrix/linalg/add_hmatrix_matrix_product.hpp>
 #include <htool/matrix/matrix_view.hpp>
 #include <memory>
+#include <vector>
 
 namespace hmb {
 
@@ -49,12 +50,19 @@ inline BlackBox blackbox_from_htool(const htool::HMatrix<double> &A, bool symmet
     bb.symmetric = symmetric;
     const htool::HMatrix<double> *Ap = &A;
     bb.apply = [Ap, keepalive](char trans, int k, const double *X, double *Y) {
-        const int m = Ap->nb_rows(), n = Ap->nb_cols();
         const bool t = (trans == 'T' || trans == 't');
-        htool::MatrixView<const double> Xv(t ? m : n, k, X);
-        htool::MatrixView<double> Yv(t ? n : m, k, Y);
-        // public API in user numbering: Htool permutes to and from its cluster ordering
-        htool::add_hmatrix_matrix_product(t ? 'T' : 'N', 'N', 1.0, *Ap, Xv, 0.0, Yv);
+        // GOTCHA(htool-user-transpose): Htool's user-numbering products permute the input with
+        // the source tree and the output with the target tree whatever op is, wrong for 'T'
+        // when the trees differ (imported matrices, rectangular ones); permute here instead.
+        const auto &in = t ? Ap->get_target_cluster() : Ap->get_source_cluster();
+        const auto &out = t ? Ap->get_source_cluster() : Ap->get_target_cluster();
+        const int nin = in.get_size(), nout = out.get_size();
+        std::vector<double> Xp(size_t(nin) * k), Yp(size_t(nout) * k);
+        for (int c = 0; c < k; c++) htool::user_to_cluster(in, X + size_t(c) * nin, Xp.data() + size_t(c) * nin);
+        htool::MatrixView<const double> Xv(nin, k, Xp.data());
+        htool::MatrixView<double> Yv(nout, k, Yp.data());
+        htool::internal_add_hmatrix_matrix_product(t ? 'T' : 'N', 'N', 1.0, *Ap, Xv, 0.0, Yv);
+        for (int c = 0; c < k; c++) htool::cluster_to_user(out, Yp.data() + size_t(c) * nout, Y + size_t(c) * nout);
     };
     return bb;
 }

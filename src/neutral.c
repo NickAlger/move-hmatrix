@@ -31,7 +31,26 @@ static void *xmalloc(size_t n) {
   return p;
 }
 
+static void *xcalloc(size_t n, size_t size) {
+  void *p = calloc(n ? n : 1, size ? size : 1);
+  if (!p) {
+    fprintf(stderr, "hmatrix-bridges: out of memory (%zu x %zu bytes)\n", n, size);
+    abort();
+  }
+  return p;
+}
+
 static int imax(int a, int b) { return a > b ? a : b; }
+
+/* Does SUPER block b split its row (side 0) or column (side 1) cluster? A split side uses
+ * the cluster's sons; with a single son, rsons == 1 either way and only the children's
+ * clusters tell the two apart. */
+static int splits(const hmb_hmatrix *A, const hmb_block *b, int side) {
+  const int n = side ? b->csons : b->rsons;
+  if (n > 1) return 1;
+  const hmb_block *first = A->bl + A->sons[b->son0];
+  return side ? first->cc != b->cc : first->rc != b->rc;
+}
 
 /* ------------------------------------------------------------------------------------ */
 size_t hmb_stored_values(const hmb_hmatrix *A) {
@@ -63,7 +82,7 @@ static int fail(errbuf *e, const char *fmt, ...) {
 
 static int check_perm(errbuf *e, const char *which, const int *p, int n) {
   if (!p) return 0;
-  char *seen = (char *)calloc((size_t)(n ? n : 1), 1);
+  char *seen = (char *)xcalloc((size_t)n, 1);
   int rc = 0;
   for (int k = 0; k < n && rc == 0; k++) {
     if (p[k] < 0 || p[k] >= n) rc = fail(e, "%s_perm[%d] = %d is out of range [0, %d)", which, k, p[k], n);
@@ -74,19 +93,22 @@ static int check_perm(errbuf *e, const char *which, const int *p, int n) {
   return rc;
 }
 
-/* Walks one cluster tree from root; mark[] counts visits within this tree. */
-static int check_tree(errbuf *e, const hmb_hmatrix *A, const char *which, int root, int n, char *mark) {
+/* Walks one cluster tree from root. A cluster is marked when it is pushed, so the stack
+ * never holds more than ncl entries even if the son lists of a corrupt view form a DAG or
+ * a cycle. */
+static int check_tree(errbuf *e, const hmb_hmatrix *A, const char *which, int root, int n) {
   if (root < 0 || root >= A->ncl) return fail(e, "%s_root = %d is not a cluster id (ncl = %d)", which, root, A->ncl);
   if (A->cl[root].offset != 0 || A->cl[root].size != n)
     return fail(e, "%s root cluster %d covers [%d, %d), expected [0, %d)", which, root, A->cl[root].offset,
                 A->cl[root].offset + A->cl[root].size, n);
-  int *stack = (int *)xmalloc(sizeof(int) * (size_t)A->ncl + sizeof(int));
+  char *mark = (char *)xcalloc((size_t)A->ncl, 1);
+  int *stack = (int *)xmalloc(sizeof(int) * (size_t)A->ncl);
   int top = 0, rc = 0;
   stack[top++] = root;
+  mark[root] = 1;
   while (top > 0 && rc == 0) {
     int c = stack[--top];
     const hmb_cluster *p = A->cl + c;
-    if (mark[c]++) { rc = fail(e, "%s tree reaches cluster %d twice", which, c); break; }
     if (p->size < 0 || p->offset < 0 || p->offset + p->size > n) {
       rc = fail(e, "%s cluster %d range [%d, %d) is outside [0, %d)", which, c, p->offset, p->offset + p->size, n);
       break;
@@ -97,20 +119,27 @@ static int check_tree(errbuf *e, const hmb_hmatrix *A, const char *which, int ro
     }
     int next = p->offset;
     for (int s = 0; s < p->nsons; s++) {
-      const hmb_cluster *q = A->cl + p->son0 + s;
+      const int sid = p->son0 + s;
+      const hmb_cluster *q = A->cl + sid;
       if (q->offset != next) {
         rc = fail(e, "%s cluster %d: son %d starts at %d, expected %d (sons must partition the parent in order)",
-                  which, c, p->son0 + s, q->offset, next);
+                  which, c, sid, q->offset, next);
         break;
       }
+      if (mark[sid]) {
+        rc = fail(e, "%s tree reaches cluster %d twice", which, sid);
+        break;
+      }
+      mark[sid] = 1;
       next += q->size;
-      stack[top++] = p->son0 + s;
+      stack[top++] = sid;
     }
     if (rc == 0 && p->nsons > 0 && next != p->offset + p->size)
       rc = fail(e, "%s cluster %d: sons cover [%d, %d), parent covers [%d, %d)", which, c, p->offset, next, p->offset,
                 p->offset + p->size);
   }
   free(stack);
+  free(mark);
   return rc;
 }
 
@@ -119,25 +148,19 @@ int hmb_validate(const hmb_hmatrix *A, char *msg, size_t msglen) {
   if (msg && msglen) msg[0] = 0;
   if (!A) return fail(&e, "null view");
   if (A->n_rows < 0 || A->n_cols < 0) return fail(&e, "negative size %d x %d", A->n_rows, A->n_cols);
+  if (A->dim < 0 || A->dim > 3) return fail(&e, "dim = %d: bounding boxes hold 0 to 3 coordinates", A->dim);
   if (A->ncl < 1 || !A->cl) return fail(&e, "no clusters");
   if (A->nbl < 1 || !A->bl) return fail(&e, "no blocks");
   if (A->sons_len < 0 || (A->sons_len > 0 && !A->sons)) return fail(&e, "sons_len = %d but sons = NULL", A->sons_len);
   if (check_perm(&e, "row", A->row_perm, A->n_rows) || check_perm(&e, "col", A->col_perm, A->n_cols)) return -1;
+  if (check_tree(&e, A, "row", A->row_root, A->n_rows) || check_tree(&e, A, "col", A->col_root, A->n_cols)) return -1;
+  if (A->bl[0].rc != A->row_root || A->bl[0].cc != A->col_root)
+    return fail(&e, "root block pairs clusters (%d, %d), expected (row_root %d, col_root %d)", A->bl[0].rc,
+                A->bl[0].cc, A->row_root, A->col_root);
 
   int rc = 0, top = 0;
-  char *rmark = (char *)calloc((size_t)A->ncl, 1), *cmark = (char *)calloc((size_t)A->ncl, 1);
-  char *bmark = (char *)calloc((size_t)A->nbl, 1);
-  int *stack = (int *)xmalloc(sizeof(int) * (size_t)A->nbl + sizeof(int));
-  if (check_tree(&e, A, "row", A->row_root, A->n_rows, rmark) ||
-      check_tree(&e, A, "col", A->col_root, A->n_cols, cmark)) {
-    rc = -1;
-    goto done;
-  }
-  if (A->bl[0].rc != A->row_root || A->bl[0].cc != A->col_root) {
-    rc = fail(&e, "root block pairs clusters (%d, %d), expected (row_root %d, col_root %d)", A->bl[0].rc, A->bl[0].cc,
-              A->row_root, A->col_root);
-    goto done;
-  }
+  char *bmark = (char *)xcalloc((size_t)A->nbl, 1);
+  int *stack = (int *)xmalloc(sizeof(int) * (size_t)A->nbl);
   stack[top++] = 0;
   bmark[0] = 1;
   while (top > 0) {
@@ -164,6 +187,15 @@ int hmb_validate(const hmb_hmatrix *A, char *msg, size_t msglen) {
                   c->nsons);
         goto done;
       }
+      const int first = A->sons[b->son0];
+      if (first < 0 || first >= A->nbl) {
+        rc = fail(&e, "block %d: child (0, 0) = %d is not a block id (nbl = %d)", id, first, A->nbl);
+        goto done;
+      }
+      /* A side is split when it uses the cluster's sons; with a single son the children's
+       * clusters say which (the split must then be the same for all children). */
+      const int rsplit = b->rsons > 1 || (r->nsons == 1 && A->bl[first].rc == r->son0);
+      const int csplit = b->csons > 1 || (c->nsons == 1 && A->bl[first].cc == c->son0);
       for (int j = 0; j < b->csons; j++)
         for (int i = 0; i < b->rsons; i++) {
           int ch = A->sons[b->son0 + i + j * b->rsons];
@@ -171,11 +203,11 @@ int hmb_validate(const hmb_hmatrix *A, char *msg, size_t msglen) {
             rc = fail(&e, "block %d: child (%d, %d) = %d is not a block id (nbl = %d)", id, i, j, ch, A->nbl);
             goto done;
           }
-          if (ch == 0 || bmark[ch]) {
+          if (bmark[ch]) {
             rc = fail(&e, "block %d reached twice (child (%d, %d) of block %d)", ch, i, j, id);
             goto done;
           }
-          int want_r = b->rsons > 1 ? r->son0 + i : b->rc, want_c = b->csons > 1 ? c->son0 + j : b->cc;
+          int want_r = rsplit ? r->son0 + i : b->rc, want_c = csplit ? c->son0 + j : b->cc;
           if (A->bl[ch].rc != want_r || A->bl[ch].cc != want_c) {
             rc = fail(&e, "block %d: child (%d, %d) = block %d pairs clusters (%d, %d), expected (%d, %d)", id, i, j, ch,
                       A->bl[ch].rc, A->bl[ch].cc, want_r, want_c);
@@ -229,8 +261,6 @@ int hmb_validate(const hmb_hmatrix *A, char *msg, size_t msglen) {
       goto done;
     }
 done:
-  free(rmark);
-  free(cmark);
   free(bmark);
   free(stack);
   return rc;
@@ -243,7 +273,7 @@ void hmb_strict_violations(const hmb_hmatrix *A, long v[2]) {
     const hmb_block *b = A->bl + k;
     int rnonleaf = A->cl[b->rc].nsons > 0, cnonleaf = A->cl[b->cc].nsons > 0;
     if (b->kind == HMB_DENSE && (rnonleaf || cnonleaf)) v[0]++;
-    if (b->kind == HMB_SUPER && ((rnonleaf && b->rsons == 1) || (cnonleaf && b->csons == 1))) v[1]++;
+    if (b->kind == HMB_SUPER && ((rnonleaf && !splits(A, b, 0)) || (cnonleaf && !splits(A, b, 1)))) v[1]++;
   }
 }
 
@@ -293,9 +323,8 @@ void hmb_matvec(const hmb_hmatrix *A, char trans, int nrhs, const double *X, int
   for (int b = 0; b < A->nbl; b++)
     if (A->bl[b].kind == HMB_LOWRANK) kmax = imax(kmax, A->bl[b].rank);
   double *Xp = (double *)xmalloc(sizeof(double) * (size_t)nin * nrhs);
-  double *Yp = (double *)calloc((size_t)(nout ? nout : 1) * nrhs, sizeof(double));
+  double *Yp = (double *)xcalloc((size_t)nout * nrhs, sizeof(double));
   double *T = (double *)xmalloc(sizeof(double) * (size_t)(kmax ? kmax : 1) * nrhs);
-  if (!Yp) abort();
   for (int c = 0; c < nrhs; c++)
     for (int k = 0; k < nin; k++) Xp[k + (size_t)c * nin] = X[(pin ? pin[k] : k) + (size_t)c * ldx];
   mv_ctx ctx = {A, t, nrhs, Xp, imax(1, nin), Yp, imax(1, nout), T};
@@ -359,9 +388,9 @@ static void ent_rec(const ent_ctx *e, int id, int r0, int r1, int c0, int c1) {
   const int ro = A->cl[b->rc].offset, co = A->cl[b->cc].offset;
   if (b->kind == HMB_DENSE) {
     for (int c = c0; c < c1; c++) {
-      const double *Dc = b->D + (size_t)(e->C[c].pos - co) * b->ldD - ro;
+      const double *Dc = b->D + (size_t)(e->C[c].pos - co) * b->ldD;
       double *oc = e->out + (size_t)e->C[c].idx * e->ldo;
-      for (int r = r0; r < r1; r++) oc[e->R[r].idx] = Dc[e->R[r].pos];
+      for (int r = r0; r < r1; r++) oc[e->R[r].idx] = Dc[e->R[r].pos - ro];
     }
     return;
   }
@@ -388,24 +417,36 @@ void hmb_inverse_perms(const hmb_hmatrix *A, int *irow, int *icol) {
     for (int k = 0; k < A->n_cols; k++) icol[A->col_perm ? A->col_perm[k] : k] = k;
 }
 
+/* Requests outside the matrix would read and write out of bounds: they are a caller bug,
+ * reported and stopped here like the missing inverse permutations below. */
+static void check_request(const char *which, int count, const int *idx, int n) {
+  for (int i = 0; i < count; i++)
+    if (idx[i] < 0 || idx[i] >= n) {
+      fprintf(stderr, "hmb_entries: %s[%d] = %d is outside [0, %d)\n", which, i, idx[i], n);
+      abort();
+    }
+}
+
 void hmb_entries_ip(const hmb_hmatrix *A, const int *irow, const int *icol, int m, const int *rows, int n,
                     const int *cols, double *out, int ldo) {
   if (m <= 0 || n <= 0) return;
+  if ((A->row_perm && !irow) || (A->col_perm && !icol)) {
+    fprintf(stderr, "hmb_entries_ip: a permuted view needs inverse permutations (hmb_inverse_perms)\n");
+    abort();
+  }
+  check_request("rows", m, rows, A->n_rows);
+  check_request("cols", n, cols, A->n_cols);
   req *R = (req *)xmalloc(sizeof(req) * (size_t)m), *C = (req *)xmalloc(sizeof(req) * (size_t)n);
   for (int i = 0; i < m; i++) {
-    R[i].pos = irow ? irow[rows[i]] : (A->row_perm ? -1 : rows[i]);
+    R[i].pos = irow ? irow[rows[i]] : rows[i];
     R[i].idx = i;
   }
   for (int j = 0; j < n; j++) {
-    C[j].pos = icol ? icol[cols[j]] : (A->col_perm ? -1 : cols[j]);
+    C[j].pos = icol ? icol[cols[j]] : cols[j];
     C[j].idx = j;
   }
   qsort(R, (size_t)m, sizeof(req), cmp_req);
   qsort(C, (size_t)n, sizeof(req), cmp_req);
-  if ((m && R[0].pos < 0) || (n && C[0].pos < 0)) {
-    fprintf(stderr, "hmb_entries_ip: a permuted view needs inverse permutations (hmb_inverse_perms)\n");
-    abort();
-  }
   ent_ctx e = {A, R, C, out, ldo};
   ent_rec(&e, 0, 0, m, 0, n);
   free(R);
@@ -413,6 +454,7 @@ void hmb_entries_ip(const hmb_hmatrix *A, const int *irow, const int *icol, int 
 }
 
 void hmb_entries(const hmb_hmatrix *A, int m, const int *rows, int n, const int *cols, double *out, int ldo) {
+  if (m <= 0 || n <= 0) return;
   int *irow = A->row_perm ? (int *)xmalloc(sizeof(int) * (size_t)A->n_rows) : NULL;
   int *icol = A->col_perm ? (int *)xmalloc(sizeof(int) * (size_t)A->n_cols) : NULL;
   hmb_inverse_perms(A, irow, icol);

@@ -1,0 +1,1 @@
+[note] process killed by the kernel OOM killer (exit 137) during buildHMatrix with CHEB=8 at N=4000 (7.8 GB machine)

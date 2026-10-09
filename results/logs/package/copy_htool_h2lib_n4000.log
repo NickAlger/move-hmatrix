@@ -1,0 +1,62 @@
+# N=4000 eps=1e-06 eta=10 leaf=64 consistent_tree=1 h2eps=1e-06 shift=10 reps=3 mvreps=7 pardepth=0 OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=1
+htool_build_s = 0.0844
+htool_matvec_seq_s = 0.003802
+htool_stored_values = 5597044 (0.35 N^2)
+htool_leaves dense=568 lowrank=1428 rank_max=19
+htool_err_vs_kernel = 7.346e-07
+check exported view validates                          ok
+export_s = 0.000212
+view clusters = 127 blocks = 2661
+view_values = 5597044 (aliased 5597044, copied 0)
+strict_violations dense_nonleaf = 0 unsplit_nonleaf = 0
+check export is zero-copy                              ok  0 values copied
+[copy] import_s = 0.011887
+[copy] values_copied = 5597044 (1.000 x source), borrowed = 0
+[copy] h2lib_bytes = 45046360 (1.006 x source bytes)
+[copy] rss_extra_MB = 42.7 peak_extra_MB = 42.7
+[copy] leaves dense=568 lowrank=1428
+[copy] h2lib_matvec_s = 0.003583
+[copy] h2lib_vs_htool = 1.051e-15
+[copy] h2lib_vs_kernel = 7.346e-07
+check [copy] H2Lib vs Htool (lossless)                 ok  1.051e-15 <= 1.137e-13
+check [copy] H2Lib vs kernel                           ok  7.346e-07 <= 1.000e-05
+[borrow] import_s = 0.005011
+[borrow] values_copied = 1688770 (0.302 x source), borrowed = 3908274
+[borrow] h2lib_bytes = 13780168 (0.308 x source bytes)
+[borrow] rss_extra_MB = 13.2 peak_extra_MB = 13.2
+[borrow] leaves dense=568 lowrank=1428
+[borrow] h2lib_matvec_s = 0.003561
+[borrow] h2lib_vs_htool = 1.051e-15
+[borrow] h2lib_vs_kernel = 7.346e-07
+check [borrow] H2Lib vs Htool (lossless)               ok  1.051e-15 <= 1.137e-13
+check [borrow] H2Lib vs kernel                         ok  7.346e-07 <= 1.000e-05
+[strict] import_s = 0.010917
+[strict] values_copied = 5597044 (1.000 x source), borrowed = 0
+[strict] h2lib_bytes = 45046360 (1.006 x source bytes)
+[strict] rss_extra_MB = 43.1 peak_extra_MB = 43.1
+[strict] leaves dense=568 lowrank=1428
+[strict] h2lib_matvec_s = 0.004208
+[strict] h2lib_vs_htool = 1.051e-15
+[strict] h2lib_vs_kernel = 7.346e-07
+check [strict] H2Lib vs Htool (lossless)               ok  1.051e-15 <= 1.137e-13
+check [strict] H2Lib vs kernel                         ok  7.346e-07 <= 1.000e-05
+check [strict] H2Lib tree is strict                    ok  (0, 0)
+{copy h2eps=1e-06} h2_convert_s = 0.2519
+{copy h2eps=1e-06} h2_convert_parts_s rowbasis=0.109 colbasis=0.102 projection=0.024
+{copy h2eps=1e-06} h2_bytes = 26168488 (near 17774208 far 8245264) = 0.584 x H source bytes
+{copy h2eps=1e-06} h2_rank_sum row=6697 col=6697 kmax row=31 col=31
+{copy h2eps=1e-06} h2_matvec_s = 0.001578
+{copy h2eps=1e-06} h2_vs_htool = 3.791e-07
+{copy h2eps=1e-06} h2_vs_kernel = 8.343e-07
+{copy h2eps=1e-06} h2_spectral_rel_diff_vs_H = 4.661e-08 (power iteration, 0.32 s)
+check H2 vs Htool                                      ok  3.791e-07 <= 1.000e-05
+check H2 vs kernel                                     ok  8.343e-07 <= 1.000e-05
+check H2 spectral difference from H                    ok  4.661e-08 <= 1.000e-05
+process_peak_rss_MB = 138.2
+source_matvec_s = 0.003705 (start 0.003802, end 0.003608)
+cost export                             =     0.06 source matvecs (0.0002 s)
+cost export + import (copy)             =     3.27 source matvecs (0.0121 s)
+cost export + import (borrow)           =     1.41 source matvecs (0.0052 s)
+cost export + import (strict)           =     3.00 source matvecs (0.0111 s)
+cost H -> H2 (from the copy import)     =    68.00 source matvecs (0.2519 s)
+HMB_TEST_PASSED copy_htool_h2lib: 12 checks; n=4000: copy 1.4-3.3, H->H2 68 matvecs

@@ -1,0 +1,33 @@
+== chain_four_libraries n=4000 eps=1e-06 tol=1e-06 shift=10 OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1
+[1] Htool: 0.091s, 5597044 stored values, 568 dense + 1428 low-rank leaves, rank <= 19; one matvec 0.00290s
+[2] export: 5597044 values aliased, 0 copied; strictness violations of the view 0 + 0; H2Lib: 568 dense + 1428 low-rank leaves
+[3] H2: bases 0.109s + 0.110s, projection 0.032s; 26.2 MB (near 17.8, far 8.2); one matvec 0.00174s
+[4] HODLR: init 0.004s, construction 8.407s (in H2Lib's products 6.659s), rank 228; check_error 3.82e-06
+[5] factorization: rank 228, 51.4 MB; asymmetry ||(S - S^T) x|| / ||S x|| = 2.08e-05; amplification a = 3.96
+[6] HARA: norm estimate 9.4026e-02 (absolute tolerance 9.40e-08), structure 0.009s, norm 0.143s, hara 56.037s (in ButterflyPACK's solves 5.869s); depth 7, rank <= 171; error against the sampled operator 6.44e-08; residual vs K of the sampled operator 1.24e-05
+
+source matvec (one vector, Htool) 0.00272s (start 0.00290s, end 0.00253s)
+   hop                                             seconds     x mv into the hop                                  MB   vs prev vs kernel
+1  Htool-DDM: ACA from the kernel's entries          0.091     33.4 5597044 entries (0.35 N^2)                  44.8         -  7.94e-07
+2  block copy Htool -> H2Lib (strict)                0.023      8.6 5597044 values copied (1.00 x Htool's)      45.0  9.54e-16  7.94e-07
+3  H -> H2 inside H2Lib                              0.252     92.7 - (basis ranks <= 31)                       26.2  4.05e-07  8.83e-07
+4  matvecs H2Lib H2 -> ButterflyPACK HODLR           8.427   3102.9 4016 vectors (1968 A^T), 52 calls           34.8  4.78e-06  4.82e-06
+5  ButterflyPACK factorization (HODLR)               0.185     68.2 -                                           51.4  2.01e-15  1.66e-05
+6  solves -> H2Opus H^2 (HARA on (S+S^T)/2)         56.285  20724.9 2941 vectors (20 for the norm), 113 calls   109.6  1.04e-05  1.24e-05
+(hops 5 and 6 hold A^-1: 'vs kernel' is the residual ||K (Y x) - x|| / ||x||; 'vs prev' the residual with the HODLR (5) and the error against ButterflyPACK's solve (6))
+chain 65.26s = 24031 source matvecs; apply A^-1 to one vector: H2Opus 0.00938s = 3.5 source matvecs, ButterflyPACK 0.00293s = 1.1
+
+RESULT n=4000 eps=1e-06 tol=1e-06 sampled=(S+S^T)/2 final_residual=1.241e-05 solve_residual=1.659e-05 sampled_residual=1.240e-05 asymmetry=2.08e-05 amplification=3.96 hara_rank=171 chain_seconds=65.26 chain_cost=24031 t_src_mv1=0.00272
+
+check 1 Htool vs kernel <= 10 eps                      ok  7.940e-07 <= 1.000e-05
+check 2 export is zero-copy                            ok  0 values copied
+check 2 H2Lib copy vs Htool: lossless                  ok  9.535e-16 <= 1.137e-13
+check 3 H2 vs H <= 10 eps                              ok  4.046e-07 <= 1.000e-05
+check 4 HODLR vs H2 <= 20 tol                          ok  4.779e-06 <= 2.000e-05
+check 4 A^T requests answered by H2Lib's 'T'           ok  17 requests, 17 'T' products
+check 5 solve: residual vs HODLR <= 10 tol             ok  2.012e-15 <= 1.000e-05
+check 5 solve: residual vs K <= 10 (a e4 + r_B)        ok  1.659e-05 <= 1.912e-04
+check 5 asymmetry of the solve <= 5 (a e4 + tol)       ok  2.076e-05 <= 1.006e-04
+check 6 H2Opus vs (S + S^T) / 2 <= 20 tol              ok  6.435e-08 <= 2.000e-05
+check 6 final residual <= 10 (r_T + a e6)              ok  1.241e-05 <= 1.266e-04
+HMB_TEST_PASSED chain_four_libraries: 11 checks; n=4000 eps=1e-06 tol=1e-06: final residual 1.24e-05

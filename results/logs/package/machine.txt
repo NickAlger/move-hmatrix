@@ -1,0 +1,1 @@
+machine: 2 cores, Intel(R) Xeon(R) Processor @ 2.10GHz, load 1.59 1.29 0.96

@@ -1,0 +1,7 @@
+blackbox.hpp            6
+htool_adapter.hpp      17
+bp_glue.hpp            73
+h2_glue.hpp            42
+total                 138
+bp_glue.hpp split: {'preamble': 3, 'context+callback': 6, 'callback': 14, 'init/options': 30, 'build': 5, 'apply_in_original_order': 7, 'free': 8}
+h2_glue.hpp split: {'preamble': 4, 'points': 7, 'sampler': 14, 'structure+hara': 10, 'apply_in_original_order': 7}

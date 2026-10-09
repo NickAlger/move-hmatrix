@@ -1,0 +1,11 @@
+== drv_h2 N=16000 eps=1e-06 reps=3 eta=10 leaf=64 h2eta=1 maxs=512 cheb=6
+[source] htool build 0.274s stored=16100549 doubles (128.80 MB) rankmax=21
+[source] matvec time: k=1 0.0220s | k=32 0.0994s (0.00311/vec)
+[source] err vs exact 1.081e-06
+[HARA rep 0] structure 0.035s hara(+norm est.) 105.347s (in source matvec 12.986s) calls=141 vectors=4173 mem=136.69MB peak+976.8MB normest=1.3575e+04
+[HARA rep 1] structure 0.038s hara(+norm est.) 104.464s (in source matvec 12.588s) calls=139 vectors=4174 mem=140.13MB peak+609.2MB normest=1.3575e+04
+[HARA rep 2] structure 0.038s hara(+norm est.) 105.162s (in source matvec 12.723s) calls=141 vectors=4199 mem=128.29MB peak+621.5MB normest=1.3575e+04
+[direct rep 0] buildHMatrix(cheb 6^3) 3.145s (mem 1852.13MB) horthog+hcompress 8.578s mem=100.87MB peak+3371.5MB
+[direct rep 1] buildHMatrix(cheb 6^3) 3.217s (mem 1852.13MB) horthog+hcompress 7.758s mem=100.87MB peak+1766.9MB
+[direct rep 2] buildHMatrix(cheb 6^3) 3.094s (mem 1852.13MB) horthog+hcompress 7.593s mem=100.87MB peak+1766.9MB
+RESULT route=HARA N=16000 eps=1e-06 calls=141 vectors=4199 vec_per_N=0.2624 t_struct=0.038 t_hara=105.162 t_in_src=12.723 t_direct_build=3.145 t_direct_compress=7.758 t_src_mv1=0.02196 t_src_mv32pv=0.00311 t_src_build=0.274 ratio_hara_over_srcmv1=4790.4 ratio_hara_over_direct=9.65 err_hara_vs_src=4.647e-06 err_direct_vs_src=9.107e-05 err_hara_vs_exact=4.733e-06 err_direct_vs_exact=9.106e-05 mem_hara_MB=128.29 mem_direct_MB=100.87 mem_cheb_MB=1852.13 src_MB=128.80 peak_hara_MB=621.5 peak_direct_MB=1766.9 glue_copied_values=134368000

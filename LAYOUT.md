@@ -18,19 +18,21 @@ adapters/<lib>/       one directory per library (htool, h2lib, hmatoss, butterfl
                       h2opus, starsh); see "Adapters" below
 tools/h2pack/         file-based bridge for H2Pack (writer of H2Pack's on-disk format)
 examples/             one self-checking program per route; they reproduce RESULTS.md
-tests/                unit and round-trip tests; tests/common/hmb_test.hpp is the harness
+tests/                unit and round-trip tests; tests/common/hmb_test.hpp is the harness,
+                      tests/run_tests.sh the runner, tests/lsan.supp the leak suppressions
 mk/                   make fragments, one per library or route
 deps/                 pinned versions and the script that builds them
-results/              measured numbers behind RESULTS.md, and the raw logs
+results/              RESULTS.md's raw logs (logs/), the script that re-runs them
+                      (run_reference.sh), and the notes of each part's authors (notes/)
 ```
 
 ## The three routes
 
 | Route | Interface | Cost (measured) | Accuracy |
 |---|---|---|---|
-| Block copy | `hmb_hmatrix` (exporter -> importer) | ~1-4 source matvecs | lossless |
-| Rebuild from entries | `hmb::EntrySource` | ~70 source matvecs | recompression at the destination's tolerance |
-| Rebuild from matvecs | `hmb::BlackBox` | ~900-4,800 source matvecs | randomized construction at the destination's tolerance |
+| Block copy | `hmb_hmatrix` (exporter -> importer) | ~1-11 source matvecs | lossless |
+| Rebuild from entries | `hmb::EntrySource` | ~60-80 source matvecs | recompression at the destination's tolerance |
+| Rebuild from matvecs | `hmb::BlackBox` | ~1,100-3,300 source matvecs | randomized construction at the destination's tolerance |
 
 `include/hmb/neutral_bridge.hpp` turns any exported view into an EntrySource or a BlackBox,
 so every exporter also feeds the two rebuild routes.
@@ -69,7 +71,14 @@ never shadow one of the library's own headers.
 Naming: C functions `hmb_<lib>_<verb>` (e.g. `hmb_h2lib_import`); C++ functions in namespace
 `hmb`, named `<lib>_<verb>` (e.g. `hmb::htool_build`). Exporters are `*_export`, block-copy
 importers `*_import`, rebuild importers `*_from_entries` / `*_from_matvec`, and
-`*_blackbox` / `*_entries` expose a library's matrix through the common interfaces.
+`*_blackbox` / `*_entries` expose a library's matrix through the common interfaces. C++ types
+are `<Lib>Handle` (a `std::shared_ptr` to the library's matrix), `<Lib>Options`,
+`<Lib>Stats`, with only the first letter of the library capitalized (`H2opusTlrHandle`).
+
+C++ signatures follow one pattern: an exporter returns `std::shared_ptr<const hmb_hmatrix>`,
+an aliasing pointer whose control block owns everything the view points into (the store, the
+source handle), so the view stays valid on its own; an importer takes `const hmb_hmatrix &`
+and returns a handle; `*_blackbox` returns a `BlackBox` that keeps its matrix alive.
 
 Errors: C functions return 0 on success and a negative code otherwise, with a message in
 an optional `char *msg, size_t msglen` argument; C++ functions throw `std::runtime_error` (or
@@ -95,6 +104,7 @@ GNU make. `Makefile` reads the configuration (`config.mk`, else
 | `mk/10-core.mk` | tests of the neutral utilities |
 | `mk/20-<lib>.mk` | the library's adapter objects (`<LIB>_OBJS`) and single-library tests |
 | `mk/50-<route>.mk` | examples and tests that combine several libraries |
+| `mk/60-cross.mk` | every block-copy exporter into every block-copy importer |
 
 Rules for fragments:
 
@@ -108,30 +118,38 @@ Rules for fragments:
 - Executables go to `$(BIN)/`; link with `$(CXX) $(HMB_LDFLAGS) <objects> <adapter objects>
   $(LIBHMB) <library LIBS> $(BLAS_LIBS) -o $@`.
 - Register executables with `TESTS += ...` or `EXAMPLES += ...`; scripts with
-  `SCRIPT_CHECKS += ...`. `make check` runs all of them.
+  `SCRIPT_CHECKS += ...`. `make check` runs all of them. Helper programs that a script runs
+  go in `TOOLS += ...` (built by `make`, not run by `make check`).
 
 Configuration variables (all optional; a library is enabled when its `_CPPFLAGS` is set):
 
 | Variable | Meaning |
 |---|---|
-| `CC`, `CXX`, `FC`, `OPT`, `OPENMP`, `BLAS_LIBS`, `PYTHON` | toolchain |
+| `CC`, `CXX`, `FC`, `OPT`, `OPENMP`, `BLAS_LIBS`, `PYTHON` | toolchain (`FC` must be the Fortran compiler that built ButterflyPACK: `adapters/butterflypack/bpack_flush.f90` is compiled with it; `PYTHON` needs numpy) |
 | `HTOOL_CPPFLAGS` | `-I` of the directory containing `htool/` (header-only) |
-| `H2LIB_CPPFLAGS`, `H2LIB_LIBS` | `-I.../Library` plus the `-D` flags libh2.a was built with (`-DUSE_BLAS -DUSE_OPENMP`); the library and its link dependencies |
-| `HMAT_CPPFLAGS`, `HMAT_LIBS` | hmat-oss include directories (source `include/` and the build directory with `hmat/config.h`); `-L... -lhmat` |
-| `BPACK_CPPFLAGS`, `BPACK_LIBS` | ButterflyPACK double-precision C interface (`dC_BPACK_wrapper.h`); `libdbutterflypack.a`, the MPI stub, `-lgfortran` |
+| `H2LIB_CPPFLAGS`, `H2LIB_LIBS` | `-I` of H2Lib's headers plus exactly the `-D` flags libh2.a was built with (struct layouts depend on them; the pinned build: `-DUSE_BLAS -DUSE_OPENMP -DHARITH_RKMATRIX_QUICK_EXIT`); libh2.a and its link dependencies |
+| `HMAT_CPPFLAGS`, `HMAT_LIBS` | hmat-oss include directories (source `include/` and the build directory with `hmat/config.h`); `-L... -lhmat` with an rpath |
+| `BPACK_CPPFLAGS`, `BPACK_LIBS` | ButterflyPACK double-precision C interface (`dBPACK_wrapper.h`); `libdbutterflypack.a`, the MPI stub `libmpi_dummy.a`, `-lgfortran -lgomp -lm` |
 | `H2OPUS_CPPFLAGS`, `H2OPUS_LIBS` | H2Opus include directories (with the generated `h2opusconf.h`, thrust and cub); the library |
-| `STARSH_CPPFLAGS`, `STARSH_LIBS` | STARS-H include directory; `libstarsh.a` and its BLAS/LAPACKE |
-| `H2PACK_CPPFLAGS`, `H2PACK_LIBS` | H2Pack include directory and defines; `libH2Pack.a` and its BLAS |
+| `STARSH_CPPFLAGS`, `STARSH_LIBS` | STARS-H include directory (plus that of the CBLAS and LAPACKE headers if not on the default path); `libstarsh.a` and LAPACKE |
+| `H2PACK_CPPFLAGS`, `H2PACK_LIBS` | H2Pack include directory and `-DUSE_OPENBLAS`; a STATIC `libH2Pack.a` (the reader fix wraps one of its internal calls at link time) and LAPACKE |
+| `H2PACK_META_SCRIPT` | optional: H2Pack's `examples/meta_json_to_txt.py` (default: found next to the include directory) |
+
+`deps/build_deps.sh` also writes two helpers into its config.mk, `DEPS_PREFIX` (the install
+prefix) and `DEPS_LAPACKE_LIBS`, which the variables above refer to.
 
 ## Tests and examples
 
 - C++17, using `tests/common/hmb_test.hpp` (test problems, error measures, timers,
   `hmb::test::Checker`). Tests of C adapters call the C API from C++; if a test needs a
   library's own headers, put that part in a separate C file.
-- Every test and example runs with no arguments in well under a few minutes on 2 cores
+- Every test and example runs with no arguments in about a minute or less on 2 cores
   (default sizes around N = 2,000-4,000) and ends with `return C.finish(...)`, which prints
   `HMB_TEST_PASSED ...` only when every check passed. `tests/run_tests.sh` requires both
   exit status 0 and that line: a Fortran STOP inside ButterflyPACK exits with status 0.
+- AddressSanitizer: `make B=build-asan OPT='-O1 -g -fsanitize=address
+  -fno-omit-frame-pointer' HMB_LDFLAGS='-fopenmp -fsanitize=address' check`. The runner
+  applies `tests/lsan.supp` (leaks inside hmat-oss and STARS-H) unless `LSAN_OPTIONS` is set.
 - Examples take `--n`, `--eps`, ... to reproduce the larger runs of RESULTS.md, and print the
   measured costs (time, memory, number of source matvecs or entries) next to the checks.
 - Accuracy thresholds are stated relative to the tolerances used (e.g. `<= 10 * eps`), and
