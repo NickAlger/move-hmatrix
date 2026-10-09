@@ -7,3 +7,5 @@
 *.o
 *.d
 __pycache__/
+/docs/figures/src/node_modules/
+/docs/figures/src/package-lock.json

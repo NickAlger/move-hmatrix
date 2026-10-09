@@ -5,10 +5,22 @@ Glue code that moves hierarchical matrices between seven open-source H-matrix li
 down what each move costs and loses, and a catalogue of the library quirks that make such
 moves fail silently.
 
-It packages the prototypes of an interoperability study ("Moving H-matrices between
-libraries"): the three transfer experiments and the import and export checks from the
-library surveys, rewritten as adapters behind one neutral interface and tested against
-pinned library versions.
+It packages the prototypes of an interoperability study ("[Moving H-matrices between
+libraries](docs/interoperability.md)"): the three transfer experiments and the import and
+export checks from the library surveys, rewritten as adapters behind one neutral interface
+and tested against pinned library versions.
+
+## Background
+
+`docs/` holds the studies behind the package, written in October 2026 ([index](docs/README.md)):
+
+- [Overview and comparison](docs/overview.md) of twelve H-matrix packages (STRUMPACK,
+  ButterflyPACK, H2Opus, HiCMA, Htool-DDM, HLIBpro, H2Lib, hmat-oss, HMatrices.jl, H2Pack,
+  MUMPS and PaStiX): formats, construction, operations and HPC reach, with a
+  [deep dive](docs/README.md#package-deep-dives) on each package.
+- [Moving H-matrices between libraries](docs/interoperability.md): the transfer routes, what
+  each library exposes, costs and traps; the study this package implements.
+- [Survey of further H-matrix packages](docs/survey.md): how the twelve were chosen.
 
 ## Three ways to move a matrix
 
@@ -19,7 +31,7 @@ pinned library versions.
 | **Rebuild from matvecs** | products with blocks of random vectors (`hmb::BlackBox`) | 1,100-3,300 | can miss the tolerance several-fold |
 
 Measured at N = 4,000-20,000 with a smooth kernel on points of a sphere, tolerance 1e-6, one
-thread; RESULTS.md has the numbers and GOTCHAS.md the traps.
+thread; [RESULTS.md](RESULTS.md) has the numbers and [GOTCHAS.md](GOTCHAS.md) the traps.
 
 ## What each library can do here
 
@@ -61,7 +73,7 @@ H2Opus's TLR builders take a clustering permutation instead of the points.) So:
   builds the matrix, H2Lib converts it to H², ButterflyPACK rebuilds and factors it, and
   H2Opus builds the inverse as an H² from ButterflyPACK's solves. The block copy into H2Lib
   costs 9 source matvecs and the conversion to H² 93; the two rebuilds cost 3,100 and 20,700
-  (RESULTS.md).
+  ([RESULTS.md](RESULTS.md)).
 
 Starting from a matrix you already built with a library: `htool_wrap`, `hmatoss_wrap` and
 `h2opus_tlr_wrap` (in the `*_native.hpp` headers) turn native objects into handles, and the C
@@ -179,7 +191,7 @@ STOP inside ButterflyPACK exits with status 0, so the status alone proves nothin
 
 ## Gotchas
 
-GOTCHAS.md lists 40 library quirks, sixteen of which return wrong numbers with a success code:
+[GOTCHAS.md](GOTCHAS.md) lists 40 library quirks, sixteen of which return wrong numbers with a success code:
 hmat-oss's 1-based `get_values` (91% error), H2Lib's H -> H² on a non-strict tree (34-57%),
 Htool-DDM's transposed product on two trees (142%), stale diagonal ranks in H2Opus's TLR
 construction, STARS-H returning another block's factors. Others end the program with exit
@@ -210,7 +222,7 @@ tests/          tests, harness (tests/common/hmb_test.hpp), runner, LSan suppres
 mk/             make fragments; deps/ pinned builds; results/ logs and notes
 ```
 
-LAYOUT.md has the conventions for adding a library or a route.
+[LAYOUT.md](LAYOUT.md) has the conventions for adding a library or a route.
 
 ## Versions and licences
 
@@ -228,5 +240,5 @@ LAYOUT.md has the conventions for adding a library or a route.
 hmat-oss is subject to its GPL; H2Lib's LGPL applies to programs that link `libh2.a`
 statically, as the package does.
 
-This package is released under the MIT licence (`LICENSE`). It contains no code from the
+This package is released under the MIT licence ([LICENSE](LICENSE)). It contains no code from the
 libraries above: `deps/build_deps.sh` downloads them from their own repositories.
