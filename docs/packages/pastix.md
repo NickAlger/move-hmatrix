@@ -1,6 +1,6 @@
 # PaStiX deep dive
 
-> Written in October 2026 by Nick Alger. Reflects the PaStiX 6.4.0 handbook and its source listings (not built); later versions may differ. [All background docs](../README.md) · [Overview of the twelve packages](../overview.md)
+> Written in October 2026 by Nick Alger with Claude Opus 5.5. Reflects the PaStiX 6.4.0 handbook and its source listings (not built); later versions may differ. [All background docs](../README.md) · [Overview of the twelve packages](../overview.md)
 
 PaStiX 6.4.0 (July 2024, still the latest release) is Inria’s supernodal sparse direct solver. It offers LLᴴ/LLᵀ, LDLᵀ/LDLᴴ and LU with static pivoting (on the pattern of A + Aᵀ; `spmCheckAndCorrect` pads unsymmetric patterns with zeros) in four arithmetics, with optional double-to-single mixed precision. Its one compressed format is an internal, flat block low-rank representation of the off-diagonal blocks of wide supernodes, built during factorization.
 

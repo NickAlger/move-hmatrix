@@ -1,6 +1,6 @@
 # ButterflyPACK deep dive
 
-> Written in October 2026 by Nick Alger. Reflects ButterflyPACK master at a8cf81b (17 Sep 2026), just after release 5.0.0; later versions may differ. [All background docs](../README.md) · [Overview of the twelve packages](../overview.md)
+> Written in October 2026 by Nick Alger with Claude Opus 5.5. Reflects ButterflyPACK master at a8cf81b (17 Sep 2026), just after release 5.0.0; later versions may differ. [All background docs](../README.md) · [Overview of the twelve packages](../overview.md)
 
 ButterflyPACK is an MPI + OpenMP library from Lawrence Berkeley National Laboratory for building and directly factoring dense matrices with low-rank and butterfly blocks. It is strongest on oscillatory kernels, such as integral equations and Helmholtz fronts inside STRUMPACK, and on black-box construction from entries or randomized matvecs. It offers HODLR/HODBF inversion, H-LU and BLR-LU with log-determinants, all distributed over MPI; version 5.0.0 adds a separate H² solver and extends the H-tensor format introduced in 4.1.0.
 

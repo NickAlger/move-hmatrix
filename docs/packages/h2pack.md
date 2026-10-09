@@ -1,6 +1,6 @@
 # H2Pack deep dive
 
-> Written in October 2026 by Nick Alger. Reflects H2Pack master at 2aa58a6 (20 Sep 2026); later versions may differ. [All background docs](../README.md) · [Overview of the twelve packages](../overview.md)
+> Written in October 2026 by Nick Alger with Claude Opus 5.5. Reflects H2Pack master at 2aa58a6 (20 Sep 2026); later versions may differ. [All background docs](../README.md) · [Overview of the twelve packages](../overview.md)
 
 H2Pack is a shared-memory C library (OpenMP and SIMD) for symmetric kernel matrices K(X, X) on one point set in up to three dimensions. Its strength is O(N) H² construction by the proxy-point method, with fast H² matvecs and products with blocks of vectors, stored or recomputed on the fly. For repeated Laplace matvecs it beats PVFMM and FMM3D at comparable accuracy.
 

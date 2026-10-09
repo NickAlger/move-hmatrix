@@ -1,6 +1,6 @@
 # HMatrices.jl deep dive
 
-> Written in October 2026 by Nick Alger. Reflects HMatrices.jl main at efc8d50 (27 Feb 2026) and release 0.2.13; later versions may differ. [All background docs](../README.md) · [Overview of the twelve packages](../overview.md)
+> Written in October 2026 by Nick Alger with Claude Opus 5.5. Reflects HMatrices.jl main at efc8d50 (27 Feb 2026) and release 0.2.13; later versions may differ. [All background docs](../README.md) · [Overview of the twelve packages](../overview.md)
 
 HMatrices.jl is a small, pure-Julia H-matrix library for boundary integral equations, and the H-matrix backend of Inti.jl. It assembles one format, a geometric H-matrix with low-rank (ABᴴ) and dense leaves, from any entry or block oracle plus point coordinates, using partial ACA or truncated SVD. Assembly and matvec are threaded.
 

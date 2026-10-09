@@ -1,6 +1,6 @@
 # HiCMA and HiCMA-PaRSEC deep dive
 
-> Written in October 2026 by Nick Alger. Reflects HiCMA 1.0.0, HiCMA-PaRSEC at 366f7e0, STARS-H at c115e75 and TLR-MVM at 9c86f91; later versions may differ. [All background docs](../README.md) · [Overview of the twelve packages](../overview.md)
+> Written in October 2026 by Nick Alger with Claude Opus 5.5. Reflects HiCMA 1.0.0, HiCMA-PaRSEC at 366f7e0, STARS-H at c115e75 and TLR-MVM at 9c86f91; later versions may differ. [All background docs](../README.md) · [Overview of the twelve packages](../overview.md)
 
 The KAUST stack provides distributed, task-based tile low-rank (TLR) arithmetic: a uniform grid of tiles, dense on the diagonal or a band and low-rank elsewhere, with no cluster tree and no nesting. It targets SPD kernel and covariance matrices whose tiles come from a kernel callback through STARS-H. Its best-supported operation is TLR Cholesky at very large scale.
 

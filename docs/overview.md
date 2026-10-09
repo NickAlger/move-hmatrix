@@ -1,6 +1,6 @@
 # H-matrix packages: overview and comparison
 
-> Written in October 2026 by Nick Alger. Reflects the twelve package docs, each of which names the versions it read; later versions may differ. [All background docs](README.md)
+> Written in October 2026 by Nick Alger with Claude Opus 5.5. Reflects the twelve package docs, each of which names the versions it read; later versions may differ. [All background docs](README.md)
 
 The twelve packages fall into four groups. Single-node H-matrix libraries: HLIBpro, H2Lib, hmat-oss and HMatrices.jl. Distributed or GPU structured-matrix packages: STRUMPACK, ButterflyPACK, H2Opus, HiCMA and Htool-DDM. A kernel-only H² package: H2Pack. Sparse direct solvers that compress their own fronts or supernodes: MUMPS and PaStiX.
 

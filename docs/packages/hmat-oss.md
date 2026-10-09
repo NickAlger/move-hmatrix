@@ -1,6 +1,6 @@
 # hmat-oss deep dive
 
-> Written in October 2026 by Nick Alger. Reflects hmat-oss master at 45a2fdb (25 Sep 2026) and tag 1.11.1; later versions may differ. [All background docs](../README.md) · [Overview of the twelve packages](../overview.md)
+> Written in October 2026 by Nick Alger with Claude Opus 5.5. Reflects hmat-oss master at 45a2fdb (25 Sep 2026) and tag 1.11.1; later versions may differ. [All background docs](../README.md) · [Overview of the twelve packages](../overview.md)
 
 hmat-oss is a small, strictly sequential C++ H-matrix library with a C API, first developed by Airbus. It assembles H-matrices from entry or block callbacks with ACA or SVD. It offers the broadest arithmetic of the eight packages reviewed here: H×H, addition, identity shift, truncation and in-place inversion.
 

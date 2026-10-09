@@ -1,6 +1,6 @@
 # H2Opus H-Matrix Capabilities
 
-> Written in October 2026 by Nick Alger. Reflects H2Opus at its final commit, cbc7985 (17 Oct 2022); later versions may differ. [All background docs](../README.md) · [Overview of the twelve packages](../overview.md)
+> Written in October 2026 by Nick Alger with Claude Opus 5.5. Reflects H2Opus at its final commit, cbc7985 (17 Oct 2022); later versions may differ. [All background docs](../README.md) · [Overview of the twelve packages](../overview.md)
 
 H2Opus is a GPU-oriented H² library for fast matrix-vector products, recompression and low-rank updates, plus a tile low-rank (TLR) module with symmetric factorizations. It has no H² factorization or solve, and its only general H² arithmetic is reconstruction from matvecs. Development stopped in October 2022.
 

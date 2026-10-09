@@ -1,6 +1,6 @@
 # MUMPS deep dive
 
-> Written in October 2026 by Nick Alger. Reflects the MUMPS 5.7.3 source and the 5.9.1 changelog and user guide; later versions may differ. [All background docs](../README.md) · [Overview of the twelve packages](../overview.md)
+> Written in October 2026 by Nick Alger with Claude Opus 5.5. Reflects the MUMPS 5.7.3 source and the 5.9.1 changelog and user guide; later versions may differ. [All background docs](../README.md) · [Overview of the twelve packages](../overview.md)
 
 MUMPS 5.9.1 (July 2026) is a mature MPI + OpenMP multifrontal sparse direct solver for LU and LDLᵀ in four arithmetics. Its only compressed format is an internal block low-rank (BLR) representation of frontal factors, optionally with compressed contribution blocks, switched on with ICNTL(35) and an absolute threshold CNTL(7). It is widely used in production; published runs reach 3.1 × 10⁸ complex unknowns on 19,200 cores.
 

@@ -1,6 +1,6 @@
 # Htool-DDM deep dive
 
-> Written in October 2026 by Nick Alger. Reflects Htool-DDM main at 0ee4cac (6 Oct 2026) and release 1.0.2; later versions may differ. [All background docs](../README.md) · [Overview of the twelve packages](../overview.md)
+> Written in October 2026 by Nick Alger with Claude Opus 5.5. Reflects Htool-DDM main at 0ee4cac (6 Oct 2026) and release 1.0.2; later versions may differ. [All background docs](../README.md) · [Overview of the twelve packages](../overview.md)
 
 Htool-DDM is a header-only C++ library (MIT) that builds H-matrices from a block-entry callback and distributes them over MPI as a row-block operator. It solves dense systems with HPDDM’s Krylov methods and one- or two-level Schwarz preconditioners (GenEO coarse space), making it mainly a domain-decomposition tool for BEM and kernel systems. It is the engine behind PETSc’s MATHTOOL type and FreeFEM’s BEM plugin.
 

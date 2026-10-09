@@ -1,6 +1,6 @@
 # STRUMPACK H-Matrix Capabilities
 
-> Written in October 2026 by Nick Alger. Reflects STRUMPACK v8.1.0 (source, released 5 Oct 2026); later versions may differ. [All background docs](../README.md) · [Overview of the twelve packages](../overview.md)
+> Written in October 2026 by Nick Alger with Claude Opus 5.5. Reflects STRUMPACK v8.1.0 (source, released 5 Oct 2026); later versions may differ. [All background docs](../README.md) · [Overview of the twelve packages](../overview.md)
 
 STRUMPACK compresses matrices in six rank-structured formats, plus floating-point (ZFP) compression; HSS, BLR, HODLR and HODBF can then be factored and solved, while Butterfly and LR support only matvecs. It has no H-matrix arithmetic, no matrix functions, and no GPU path of its own for its hierarchical formats. Its strongest HPC component is the sparse multifrontal solver.
 

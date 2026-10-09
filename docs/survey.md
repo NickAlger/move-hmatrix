@@ -1,6 +1,6 @@
 # Survey of further H-matrix packages
 
-> Written in October 2026 by Nick Alger. Reflects the eight packages' repositories, release notes and papers as read on 8 Oct 2026; later versions may differ. [All background docs](README.md) · [Overview of the twelve packages](overview.md)
+> Written in October 2026 by Nick Alger with Claude Opus 5.5. Reflects the eight packages' repositories, release notes and papers as read on 8 Oct 2026; later versions may differ. [All background docs](README.md) · [Overview of the twelve packages](overview.md)
 
 Eight further packages clear the bar: [ButterflyPACK](packages/butterflypack.md), [Htool-DDM](packages/htool-ddm.md), [hmat-oss](packages/hmat-oss.md), [H2Pack](packages/h2pack.md), [HMatrices.jl](packages/hmatrices-jl.md), [HiCMA (with HiCMA-PaRSEC)](packages/hicma.md), [MUMPS](packages/mumps.md) and [PaStiX](packages/pastix.md). They add butterfly and tensor formats, tile low-rank on runtime systems, and two sparse direct solvers with low-rank compression to the four libraries already covered ([STRUMPACK](packages/strumpack.md), [H2Opus](packages/h2opus.md), [HLIBpro](packages/hlibpro.md), [H2Lib](packages/h2lib.md); all twelve are compared in the [overview](overview.md)).
 

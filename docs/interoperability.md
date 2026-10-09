@@ -1,6 +1,6 @@
 # Moving H-matrices between libraries
 
-> Written in October 2026 by Nick Alger. Reflects the library versions listed under [Sources](#sources); later versions may differ. [All background docs](README.md) · [Overview of the twelve packages](overview.md)
+> Written in October 2026 by Nick Alger with Claude Opus 5.5. Reflects the library versions listed under [Sources](#sources); later versions may differ. [All background docs](README.md) · [Overview of the twelve packages](overview.md)
 
 Most of the twelve libraries can hand a compressed matrix to some other library, but only one route is cheap. A block copy of the trees and leaf factors cost 1–4 source matvecs in our prototype and lost nothing. Five libraries accept a block copy of a general H-matrix: H2Lib, HLIBpro (C++ only), Htool-DDM, hmat-oss (through its serialization stream) and HMatrices.jl (from Julia). Only Htool-DDM among them runs under MPI, and four more libraries take only narrow special cases.
 

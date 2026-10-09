@@ -1,6 +1,6 @@
 # HLIBpro: capabilities review
 
-> Written in October 2026 by Nick Alger. Reflects the HLIBpro 3.2 documentation and published papers (closed source; no code was downloaded); later versions may differ. [All background docs](../README.md) · [Overview of the twelve packages](../overview.md)
+> Written in October 2026 by Nick Alger with Claude Opus 5.5. Reflects the HLIBpro 3.2 documentation and published papers (closed source; no code was downloaded); later versions may differ. [All background docs](../README.md) · [Overview of the twelve packages](../overview.md)
 
 HLIBpro 3.2 has broad H-matrix arithmetic, but in practice it is a single-node CPU library: MPI is claimed but undocumented, and GPUs serve only dense SVD and QR. It adds, multiplies, inverts and factorizes (LU, LDU, Cholesky, LDL) H-matrices of any block structure. It builds from matrix entries or sparse matrices, never from matvecs, and has no QR, eigensolver or matrix functions.
 

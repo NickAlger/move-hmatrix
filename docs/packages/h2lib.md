@@ -1,6 +1,6 @@
 # H2Lib: capabilities review
 
-> Written in October 2026 by Nick Alger. Reflects the H2Lib `community` branch at 920662c (13 Feb 2020); later versions may differ. [All background docs](../README.md) · [Overview of the twelve packages](../overview.md)
+> Written in October 2026 by Nick Alger with Claude Opus 5.5. Reflects the H2Lib `community` branch at 920662c (13 Feb 2020); later versions may differ. [All background docs](../README.md) · [Overview of the twelve packages](../overview.md)
 
 H2Lib goes deepest on H² of the twelve packages in the overview, but it is a mostly sequential, single-node library. It compresses dense, H and H² matrices into H², multiplies, inverts and factorizes (LU, Cholesky) H²-matrices, and adds directional H² (DH²) for high-frequency Helmholtz. The H² arithmetic module is labelled experimental, construction is built around boundary-element (BEM) problems, and nothing builds a matrix from matvecs.
 
