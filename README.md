@@ -14,8 +14,8 @@ pinned library versions.
 
 | Route | What crosses | Cost, in source matvecs | Accuracy |
 |---|---|---|---|
-| **Block copy** | cluster trees, permutations, block tree and leaf factors, through a neutral in-memory view (`hmb_hmatrix`) | 1-11 | lossless (1e-16 to 1e-15) |
-| **Rebuild from entries** | the entries the destination's compressor asks for (`hmb::EntrySource`) | 60-80 | both libraries' errors add |
+| **Block copy** | cluster trees, permutations, block tree and leaf factors, through a neutral in-memory view (`hmb_hmatrix`) | 1-11 | lossless (6e-17 to 1.1e-15) |
+| **Rebuild from entries** | the entries the destination's compressor asks for (`hmb::EntrySource`) | 60-80 into ACA destinations (Htool-DDM, hmat-oss); ButterflyPACK and tile low-rank destinations ask for O(N²) entries | both libraries' errors add |
 | **Rebuild from matvecs** | products with blocks of random vectors (`hmb::BlackBox`) | 1,100-3,300 | can miss the tolerance several-fold |
 
 Measured at N = 4,000-20,000 with a smooth kernel on points of a sphere, tolerance 1e-6, one
@@ -26,29 +26,46 @@ thread; RESULTS.md has the numbers and GOTCHAS.md the traps.
 | Library | Block copy out | Block copy in | Built from entries | Built from matvecs | Matvec out | Also |
 |---|---|---|---|---|---|---|
 | Htool-DDM | `htool_export` (zero-copy; one-triangle storage mirrored) | `htool_import` (any tree, lossless) | `htool_build` | - | `htool_blackbox` | |
-| H2Lib | `h2lib_export` (zero-copy) | `h2lib_import` (copy, borrow, strict) | - | - | `h2lib_blackbox` | H -> H² `h2lib_to_h2`, `h2lib_h2_blackbox` |
+| H2Lib | `h2lib_export` (zero-copy) | `h2lib_import` (copy, borrow, strict) | - | - | `h2lib_blackbox` | H -> H² `h2lib_to_h2` (needs a strict import), `h2lib_h2_blackbox` |
 | hmat-oss | `hmatoss_export` (its serialization stream) | `hmatoss_import` (lossless) | `hmatoss_build` | - | `hmatoss_blackbox` | `hmatoss_entries` |
 | STARS-H | `starsh_export` (zero-copy) | `starsh_import` (any partition) | `starsh_from_entries` (TLR) | - | `starsh_blackbox` | |
 | H2Opus, TLR | `h2opus_tlr_export` (zero-copy) | `h2opus_tlr_import` (uniform tiles only) | `h2opus_tlr_from_entries` | - | `h2opus_tlr_blackbox` | |
 | H2Opus, H² | - | - | - | `h2opus_from_matvec` (HARA; symmetric only) | `h2opus_blackbox` | |
 | ButterflyPACK | - | - | `bpack_from_entries` (HODLR, H) | `bpack_from_matvec` (HODLR, H) | `bpack_blackbox` | `bpack_factor`, `bpack_solve_blackbox` |
-| H2Pack | - | file writer `tools/h2pack/h2pack_write.py` (real symmetric H²) | - | - | - | file-based, see `tools/h2pack/` |
+| H2Pack | - | file writer `tools/h2pack/h2pack_write.py` (real symmetric H², from numpy arrays) | - | - | - | file-based, see `tools/h2pack/` |
 
-Everything is in namespace `hmb` (C APIs for H2Lib and STARS-H as `hmb_h2lib_*`,
-`hmb_starsh_*`). So:
+Everything is in namespace `hmb`; H2Lib and STARS-H also have C APIs (`hmb_h2lib_*`,
+`hmb_starsh_*`). Moving a matrix from library X to library Y is one of three lines, where
+`hx` is X's handle:
 
-- **Any exporter into any importer.** All 48 pairs of the five block-copy libraries (eight
-  sources, six destinations) are tested to be lossless by `tests/test_cross_copy.cpp`; H2Opus
-  TLR refuses non-tile partitions with an explanation.
+```cpp
+auto hy = hmb::<y>_import(*hmb::<x>_export(hx));                                    // block copy
+auto hy = hmb::<y>_from_matvec(hmb::<x>_blackbox(hx), dim, xyz, opt);               // matvecs
+auto hy = hmb::<y>_build(hmb::entries_from_neutral(hmb::<x>_export(hx)), dim, xyz); // entries
+```
+
+(`<y>_build` for Htool-DDM and hmat-oss, `<y>_from_entries` for ButterflyPACK; STARS-H's and
+H2Opus's TLR builders take a clustering permutation instead of the points.) So:
+
+- **Any exporter into any importer.** 43 of the 48 pairs of the five block-copy libraries
+  (eight sources, six destinations) are tested to be lossless by `tests/test_cross_copy.cpp`;
+  the other 5 are H2Opus TLR refusing hierarchical partitions, with an explanation.
 - **Any exported view feeds the rebuild routes.** `entries_from_neutral(view)` and
   `blackbox_from_neutral(view)` (`include/hmb/neutral_bridge.hpp`) turn any view into an
-  `EntrySource` or a `BlackBox`, so a library without entry access (H2Lib, Htool-DDM) can
-  still feed ButterflyPACK, Htool-DDM or hmat-oss from entries.
+  `EntrySource` or a `BlackBox`, so libraries without entry access of their own (H2Lib,
+  Htool-DDM, STARS-H, H2Opus TLR) can feed every builder that compresses from entries; the
+  same test checks all 20 combinations. Serving entries from a view is cheap for compressors
+  that ask for rows and blocks (ACA) and slow for those that ask for every entry one by one.
 - **Chains.** `examples/chain_four_libraries.cpp` runs the study's "extreme example": Htool-DDM
   builds the matrix, H2Lib converts it to H², ButterflyPACK rebuilds and factors it, and
   H2Opus builds the inverse as an H² from ButterflyPACK's solves. The block copy into H2Lib
   costs 9 source matvecs and the conversion to H² 93; the two rebuilds cost 3,100 and 20,700
   (RESULTS.md).
+
+Starting from a matrix you already built with a library: `htool_wrap`, `hmatoss_wrap` and
+`h2opus_tlr_wrap` (in the `*_native.hpp` headers) turn native objects into handles, and the C
+exporters `hmb_h2lib_export` and `hmb_starsh_export` take H2Lib's `hmatrix` and STARS-H's
+`STARSH_blrm` directly. Native ButterflyPACK and H2Opus H² matrices cannot be wrapped.
 
 ## Quick start
 
@@ -63,7 +80,9 @@ make check                # 27 test programs, ~2 min on 2 cores
 `deps/build_deps.sh` writes `deps/install/config.mk`, which the Makefile uses when there is no
 top-level `config.mk`. To use your own builds instead, copy `config.mk.example` to `config.mk`
 and set the variables of the libraries you have: any subset works, and `make info` shows what
-is enabled and what will be built. Linux and GCC only; no MPI, CUDA or MAGMA needed.
+is enabled and what will be built. Changing the configuration, or rebuilding a static library
+in place, recompiles what depends on it. `make B=<dir>` builds into another directory (a
+sanitizer build next to the normal one, say). Linux and GCC only; no MPI, CUDA or MAGMA needed.
 
 ## Using it
 
@@ -75,6 +94,8 @@ library's own headers, so any combination compiles in one file:
 #include "hmb_h2lib.hpp"       // H2Lib: import, H -> H2
 #include "hmb_htool.hpp"       // Htool-DDM: build from entries
 #include "hmb_htool_copy.hpp"  // Htool-DDM <-> neutral view
+#include <cstdio>
+#include <vector>
 
 // The matrix to compress, as entries in your own (original) ordering.
 hmb::EntrySource K;
@@ -101,52 +122,75 @@ hmb::BlackBox Bx = hmb::bpack_blackbox(B);                             // y = B 
 ```
 
 `xyz` holds the points (3 x n, point-major), which every library uses for its cluster tree.
-Handles are `std::shared_ptr`s and every view or BlackBox keeps what it points into alive,
-so the order of destruction does not matter. C++ functions throw `std::invalid_argument` or
-`std::runtime_error` with the function's name and the reason.
+Handles are `std::shared_ptr`s; the views exporters return, and every BlackBox and EntrySource
+made from a handle or a view, keep alive what they point into. Two exceptions: a borrowing
+H2Lib import (`HMB_H2LIB_BORROW`) aliases the view's leaves, so pass the view as
+`h2lib_import`'s last argument (`keepalive`), and the raw-pointer versions of
+`blackbox_from_neutral` / `entries_from_neutral` keep alive only their `keepalive` argument.
+C++ functions throw `std::invalid_argument`, `std::runtime_error` or `std::logic_error` with
+the function's name and the reason. One failure cannot be caught: when ButterflyPACK's
+sampling does not converge it ends the program; the adapter prints why and exits with status 70
+(GOTCHA(fortran-stop)), so check `BpackStats::check_error` and give it room (rank0, rankrate).
+
+Tolerances mean different things per library: relative per block for Htool-DDM and hmat-oss,
+relative per tile (Frobenius) for STARS-H, absolute per tile for H2Opus TLR, relative to a
+sampled norm estimate of the whole matrix for HARA (H2Opus H²), and a construction target that
+ButterflyPACK's matvec route can miss several-fold. Each header says how its library reads it.
 
 To build your own program against the package, `make` leaves one archive per adapter in
-`build/lib/` and `make info` prints what each needs on the link line:
+`build/lib/`, and `make info` prints, for each archive, the library flags to link it with:
 
 ```sh
-g++ -std=c++17 -fopenmp -I$HMB/include -I$HMB/adapters/htool -I$HMB/adapters/h2lib \
+HMB=/path/to/hmatrix-bridges
+g++ -std=c++17 -O2 -fopenmp -I$HMB/include -I$HMB/adapters/htool -I$HMB/adapters/h2lib \
     -I$HMB/adapters/butterflypack my.cpp \
     $HMB/build/lib/libhmb_htool.a $HMB/build/lib/libhmb_h2lib.a $HMB/build/lib/libhmb_bpack.a \
     $HMB/build/lib/libhmb.a  <H2LIB_LIBS> <BPACK_LIBS> <BLAS_LIBS>
 ```
 
+with `<H2LIB_LIBS>`, `<BPACK_LIBS>` and `<BLAS_LIBS>` replaced by the values `make info`
+prints for `libhmb_h2lib.a`, `libhmb_bpack.a` and `BLAS_LIBS`. Linking ButterflyPACK prints
+`requires executable stack` for one of its Fortran objects: harmless, and needed (gfortran's
+trampolines run on the stack).
+
 The examples in `examples/` show every route end to end, with costs and checks; each header
-documents its conventions, ownership, limits and the version it was tested with.
+documents its conventions, ownership, limits, memory and the version it was tested with.
+Rebuilding is memory-hungry: HARA peaked at 7-9x its result (+241 MB at N = 4,000, +988 MB at
+16,000) and ButterflyPACK's HODLR at +862 MB at N = 16,000. ButterflyPACK reseeds its random
+generator from the clock, so its results differ slightly between runs.
 
 ## What is tested
 
-`make check` runs 27 programs with about 1,100 individual checks; each program prints every
+`make check` runs 27 programs with about 1,150 individual checks; each program prints every
 measured value next to its threshold and must end with a `HMB_TEST_PASSED` line (a Fortran
 STOP inside ButterflyPACK exits with status 0, so the status alone proves nothing).
 
 - Each adapter against its library's own operations: orderings and permutations, 'N' and 'T'
   products, non-symmetric kernels, one-triangle storage, padded leading dimensions, rank-0
-  leaves, unusual tree shapes, error paths, and a test for each quirk it works around.
+  leaves, unusual tree shapes, error paths, and a test for most of the quirks it works around.
 - The neutral core (validation, reference products and entries) against dense matrices.
-- Every block-copy exporter into every importer (`test_cross_copy`).
-- Six examples that reproduce the study's measurements at small sizes, and at the original
-  sizes through `results/run_reference.sh`.
-- Both against fresh pinned builds (`deps/build_deps.sh`) and against the study's own builds;
-  the adapters were also run under AddressSanitizer.
+- Every block-copy exporter into every importer, and the entry route from every view
+  (`test_cross_copy`).
+- Six examples: four reproduce the study's measurements at small sizes (and at the original
+  sizes through `results/run_reference.sh`), two show the TLR copy and the four-library chain.
+- Against fresh pinned builds (`deps/build_deps.sh`, also from a fresh clone) and against the
+  study's own builds; every test and example also passes under AddressSanitizer.
 
 ## Gotchas
 
-GOTCHAS.md lists 40 library quirks, most of which return success with wrong numbers: hmat-oss's
-1-based `get_values` (91% error), H2Lib's H -> H² on a non-strict tree (34-57%), Htool-DDM's
-transposed product on two trees (142%), stale diagonal ranks in H2Opus's TLR construction,
-STARS-H returning another block's factors, ButterflyPACK ending the program with exit status 0,
-H2Pack's reader corrupting the heap. Code that handles one is marked `GOTCHA(<id>)`.
+GOTCHAS.md lists 40 library quirks, sixteen of which return wrong numbers with a success code:
+hmat-oss's 1-based `get_values` (91% error), H2Lib's H -> H² on a non-strict tree (34-57%),
+Htool-DDM's transposed product on two trees (142%), stale diagonal ranks in H2Opus's TLR
+construction, STARS-H returning another block's factors. Others end the program with exit
+status 0 (ButterflyPACK) or corrupt the heap (H2Pack's file reader). Code that handles one is
+marked `GOTCHA(<id>)`.
 
 ## Limits
 
 - Real double precision only, one process (no MPI), CPU only.
 - The neutral form has no nested bases: H² matrices move only by rebuilding (from matvecs, or
-  H2Lib's own H -> H² after a block copy), or into H2Pack through its file format.
+  H2Lib's own H -> H² after a block copy). H2Pack's file writer takes H² factors as numpy
+  arrays; no adapter exports H² factors (H2Lib's and H2Opus's H² leave only as BlackBoxes).
 - Libraries studied but not bridged: HLIBpro (closed source; not downloaded), STRUMPACK,
   HMatrices.jl (Julia), HiCMA (its STARS-H is bridged), MUMPS and PaStiX (no compressed
   matrices in or out).
@@ -175,9 +219,10 @@ LAYOUT.md has the conventions for adding a library or a route.
 | H2Lib (community branch) | 920662c | LGPL-3.0 |
 | hmat-oss | 45a2fdb | GPL-2.0-or-later |
 | ButterflyPACK | a8cf81b | BSD-3-Clause (LBNL) |
-| H2Opus (with Thrust 1.17.2) | cbc7985 | BSD-3-Clause (Thrust: Apache-2.0) |
+| H2Opus (with Thrust 1.17.2 and its CUB) | cbc7985 | BSD-3-Clause (Thrust: Apache-2.0, with BSL-1.0 and BSD-2-Clause parts; CUB: BSD-3-Clause) |
 | STARS-H | c115e75 | BSD-3-Clause |
 | H2Pack | 2aa58a6 | MIT |
 
 `deps/versions.txt` has the full commits, dates and build options. A program that links
-hmat-oss is subject to its GPL. This package's own licence has not been chosen yet.
+hmat-oss is subject to its GPL; H2Lib's LGPL applies to programs that link `libh2.a`
+statically, as the package does. This package's own licence has not been chosen yet.

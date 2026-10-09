@@ -1,9 +1,16 @@
 // hmatrix-bridges: any neutral view as a BlackBox or an EntrySource.
 //
 // With these, the output of any exporter can feed the rebuild routes (an importer that
-// takes entries or matvecs) even when no block-copy importer exists for the destination.
-// Both use the reference kernels of src/neutral.c (hmb_matvec, hmb_entries); they are
-// simple and correct, not tuned.
+// takes entries or matvecs) even when no block-copy importer exists for the destination,
+// and a library without entry access (H2Lib, Htool-DDM, STARS-H, H2Opus TLR) can serve
+// entries. Both use the reference kernels of src/neutral.c (hmb_matvec, hmb_entries_ip);
+// they are simple and correct, not tuned: an entry request costs about (m + n) x tree depth
+// plus a dot product of length rank per entry in a low-rank leaf (0.8 us for a single entry
+// at N = 20,000), fine for compressors that ask for rows, columns or blocks (ACA: Htool-DDM,
+// hmat-oss), slow for those that ask for every entry one at a time.
+//
+// Pass the shared_ptr an exporter returned: the BlackBox or EntrySource then keeps the view,
+// and whatever it points into, alive. The raw-pointer versions keep alive only `keepalive`.
 #pragma once
 #include "hmb/blackbox.hpp"
 #include "hmb/entry_source.hpp"
@@ -14,8 +21,8 @@
 
 namespace hmb {
 
-// keepalive: whatever owns the storage behind A (a shared_ptr<NeutralStore>, a handle to
-// the source library's matrix, ...). It is copied into the closure.
+// keepalive: whatever owns the storage behind A (the shared_ptr an exporter returned, a
+// handle to the source library's matrix, ...). It is copied into the closure.
 inline BlackBox blackbox_from_neutral(const hmb_hmatrix *A, std::shared_ptr<const void> keepalive = nullptr,
                                       bool symmetric = false) {
     BlackBox b;
@@ -44,6 +51,15 @@ inline EntrySource entries_from_neutral(const hmb_hmatrix *A, std::shared_ptr<co
                        N, cols, out, M);
     };
     return e;
+}
+
+// The same for the view an exporter returned (keeps it alive).
+inline BlackBox blackbox_from_neutral(const std::shared_ptr<const hmb_hmatrix> &view, bool symmetric = false) {
+    return blackbox_from_neutral(view.get(), view, symmetric);
+}
+
+inline EntrySource entries_from_neutral(const std::shared_ptr<const hmb_hmatrix> &view) {
+    return entries_from_neutral(view.get(), view);
 }
 
 } // namespace hmb

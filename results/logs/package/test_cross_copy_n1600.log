@@ -1,0 +1,132 @@
+Selected backend is OPENMP
+Selected low-rank engine is RSVD
+Selected oversample size 10
+n = 1600, 8 sources x 6 destinations; lossless means a relative product difference <= 1e-13
+check Htool export validates                           ok
+source Htool            1615500 stored values,  1173 blocks
+check Htool -> Htool product (N, T)                    ok  2.690e-16 <= 1.000e-13
+check Htool -> Htool re-export                         ok  0.000e+00 <= 1e-13 
+check Htool -> H2Lib copy product (N, T)               ok  6.909e-16 <= 1.000e-13
+check Htool -> H2Lib copy re-export                    ok  2.168e-16 <= 1e-13 
+check Htool -> H2Lib strict product (N, T)             ok  6.909e-16 <= 1.000e-13
+check Htool -> H2Lib strict re-export                  ok  2.168e-16 <= 1e-13 
+check Htool -> hmat-oss product (N, T)                 ok  2.168e-16 <= 1.000e-13
+check Htool -> hmat-oss re-export                      ok  2.168e-16 <= 1e-13 
+check Htool -> STARS-H product (N, T)                  ok  2.478e-16 <= 1.000e-13
+check Htool -> STARS-H re-export                       ok  2.168e-16 <= 1e-13 
+check Htool -> H2Opus TLR refused (not uniform tiles)  ok  hmb::h2opus_tlr_import: not a tile low-rank matrix: tile (0, 0) is subdivided
+check Htool sym export validates                       ok
+source Htool sym        1543400 stored values,  1149 blocks
+check Htool sym -> Htool product (N, T)                ok  2.649e-16 <= 1.000e-13
+check Htool sym -> Htool re-export                     ok  1.602e-16 <= 1e-13 
+check Htool sym -> H2Lib copy product (N, T)           ok  5.941e-16 <= 1.000e-13
+check Htool sym -> H2Lib copy re-export                ok  1.352e-16 <= 1e-13 
+check Htool sym -> H2Lib strict product (N, T)         ok  5.941e-16 <= 1.000e-13
+check Htool sym -> H2Lib strict re-export              ok  1.352e-16 <= 1e-13 
+check Htool sym -> hmat-oss product (N, T)             ok  1.352e-16 <= 1.000e-13
+check Htool sym -> hmat-oss re-export                  ok  1.352e-16 <= 1e-13 
+check Htool sym -> STARS-H product (N, T)              ok  2.130e-16 <= 1.000e-13
+check Htool sym -> STARS-H re-export                   ok  1.352e-16 <= 1e-13 
+check Htool sym -> H2Opus TLR refused (not uniform tiles) ok  hmb::h2opus_tlr_import: not a tile low-rank matrix: tile (0, 0) is subdivided
+check H2Lib export validates                           ok
+source H2Lib            1615500 stored values,  1173 blocks
+check H2Lib -> Htool product (N, T)                    ok  2.906e-16 <= 1.000e-13
+check H2Lib -> Htool re-export                         ok  2.168e-16 <= 1e-13 
+check H2Lib -> H2Lib copy product (N, T)               ok  6.875e-16 <= 1.000e-13
+check H2Lib -> H2Lib copy re-export                    ok  0.000e+00 <= 1e-13 
+check H2Lib -> H2Lib strict product (N, T)             ok  6.875e-16 <= 1.000e-13
+check H2Lib -> H2Lib strict re-export                  ok  0.000e+00 <= 1e-13 
+check H2Lib -> hmat-oss product (N, T)                 ok  0.000e+00 <= 1.000e-13
+check H2Lib -> hmat-oss re-export                      ok  0.000e+00 <= 1e-13 
+check H2Lib -> STARS-H product (N, T)                  ok  2.067e-16 <= 1.000e-13
+check H2Lib -> STARS-H re-export                       ok  0.000e+00 <= 1e-13 
+check H2Lib -> H2Opus TLR refused (not uniform tiles)  ok  hmb::h2opus_tlr_import: not a tile low-rank matrix: tile (0, 0) is subdivided
+check hmat-oss export validates                        ok
+source hmat-oss         1504800 stored values,  1277 blocks
+check hmat-oss -> Htool product (N, T)                 ok  2.907e-16 <= 1.000e-13
+check hmat-oss -> Htool re-export                      ok  2.045e-16 <= 1e-13 
+check hmat-oss -> H2Lib copy product (N, T)            ok  6.012e-16 <= 1.000e-13
+check hmat-oss -> H2Lib copy re-export                 ok  0.000e+00 <= 1e-13 
+check hmat-oss -> H2Lib strict product (N, T)          ok  6.012e-16 <= 1.000e-13
+check hmat-oss -> H2Lib strict re-export               ok  0.000e+00 <= 1e-13 
+check hmat-oss -> hmat-oss product (N, T)              ok  0.000e+00 <= 1.000e-13
+check hmat-oss -> hmat-oss re-export                   ok  0.000e+00 <= 1e-13 
+check hmat-oss -> STARS-H product (N, T)               ok  1.893e-16 <= 1.000e-13
+check hmat-oss -> STARS-H re-export                    ok  0.000e+00 <= 1e-13 
+check hmat-oss -> H2Opus TLR refused (not uniform tiles) ok  hmb::h2opus_tlr_import: not a tile low-rank matrix: tile (0, 0) is subdivided
+check hmat-oss sym export validates                    ok
+source hmat-oss sym     1449400 stored values,  1269 blocks
+check hmat-oss sym -> Htool product (N, T)             ok  2.940e-16 <= 1.000e-13
+check hmat-oss sym -> Htool re-export                  ok  2.150e-16 <= 1e-13 
+check hmat-oss sym -> H2Lib copy product (N, T)        ok  6.786e-16 <= 1.000e-13
+check hmat-oss sym -> H2Lib copy re-export             ok  0.000e+00 <= 1e-13 
+check hmat-oss sym -> H2Lib strict product (N, T)      ok  6.786e-16 <= 1.000e-13
+check hmat-oss sym -> H2Lib strict re-export           ok  0.000e+00 <= 1e-13 
+check hmat-oss sym -> hmat-oss product (N, T)          ok  0.000e+00 <= 1.000e-13
+check hmat-oss sym -> hmat-oss re-export               ok  0.000e+00 <= 1e-13 
+check hmat-oss sym -> STARS-H product (N, T)           ok  2.174e-16 <= 1.000e-13
+check hmat-oss sym -> STARS-H re-export                ok  0.000e+00 <= 1e-13 
+check hmat-oss sym -> H2Opus TLR refused (not uniform tiles) ok  hmb::h2opus_tlr_import: not a tile low-rank matrix: tile (0, 0) is subdivided
+check STARS-H TLR export validates                     ok
+source STARS-H TLR      1380200 stored values,    37 blocks
+check STARS-H TLR -> Htool product (N, T)              ok  3.805e-16 <= 1.000e-13
+check STARS-H TLR -> Htool re-export                   ok  3.768e-16 <= 1e-13 
+check STARS-H TLR -> H2Lib copy product (N, T)         ok  7.643e-16 <= 1.000e-13
+check STARS-H TLR -> H2Lib copy re-export              ok  0.000e+00 <= 1e-13 
+check STARS-H TLR -> H2Lib strict product (N, T)       ok  7.643e-16 <= 1.000e-13
+check STARS-H TLR -> H2Lib strict re-export            ok  0.000e+00 <= 1e-13 
+check STARS-H TLR -> hmat-oss product (N, T)           ok  0.000e+00 <= 1.000e-13
+check STARS-H TLR -> hmat-oss re-export                ok  0.000e+00 <= 1e-13 
+check STARS-H TLR -> STARS-H product (N, T)            ok  1.062e-16 <= 1.000e-13
+check STARS-H TLR -> STARS-H re-export                 ok  0.000e+00 <= 1e-13 
+check STARS-H TLR -> H2Opus TLR product (N, T)         ok  1.634e-16 <= 1.000e-13
+check STARS-H TLR -> H2Opus TLR re-export              ok  1.234e-16 <= 1e-13 
+check STARS-H TLR sym export validates                 ok
+source STARS-H TLR sym  1290800 stored values,    37 blocks
+check STARS-H TLR sym -> Htool product (N, T)          ok  3.687e-16 <= 1.000e-13
+check STARS-H TLR sym -> Htool re-export               ok  3.657e-16 <= 1e-13 
+check STARS-H TLR sym -> H2Lib copy product (N, T)     ok  7.975e-16 <= 1.000e-13
+check STARS-H TLR sym -> H2Lib copy re-export          ok  0.000e+00 <= 1e-13 
+check STARS-H TLR sym -> H2Lib strict product (N, T)   ok  7.975e-16 <= 1.000e-13
+check STARS-H TLR sym -> H2Lib strict re-export        ok  0.000e+00 <= 1e-13 
+check STARS-H TLR sym -> hmat-oss product (N, T)       ok  0.000e+00 <= 1.000e-13
+check STARS-H TLR sym -> hmat-oss re-export            ok  0.000e+00 <= 1e-13 
+check STARS-H TLR sym -> STARS-H product (N, T)        ok  1.114e-16 <= 1.000e-13
+check STARS-H TLR sym -> STARS-H re-export             ok  0.000e+00 <= 1e-13 
+check STARS-H TLR sym -> H2Opus TLR product (N, T)     ok  1.576e-16 <= 1.000e-13
+check STARS-H TLR sym -> H2Opus TLR re-export          ok  1.124e-16 <= 1e-13 
+check H2Opus TLR export validates                      ok
+source H2Opus TLR       1998600 stored values,    37 blocks
+check H2Opus TLR -> Htool product (N, T)               ok  3.600e-16 <= 1.000e-13
+check H2Opus TLR -> Htool re-export                    ok  3.503e-16 <= 1e-13 
+check H2Opus TLR -> H2Lib copy product (N, T)          ok  9.978e-16 <= 1.000e-13
+check H2Opus TLR -> H2Lib copy re-export               ok  0.000e+00 <= 1e-13 
+check H2Opus TLR -> H2Lib strict product (N, T)        ok  9.978e-16 <= 1.000e-13
+check H2Opus TLR -> H2Lib strict re-export             ok  0.000e+00 <= 1e-13 
+check H2Opus TLR -> hmat-oss product (N, T)            ok  0.000e+00 <= 1.000e-13
+check H2Opus TLR -> hmat-oss re-export                 ok  0.000e+00 <= 1e-13 
+check H2Opus TLR -> STARS-H product (N, T)             ok  1.040e-16 <= 1.000e-13
+check H2Opus TLR -> STARS-H re-export                  ok  0.000e+00 <= 1e-13 
+check H2Opus TLR -> H2Opus TLR product (N, T)          ok  1.085e-16 <= 1.000e-13
+check H2Opus TLR -> H2Opus TLR re-export               ok  0.000e+00 <= 1e-13 
+check entries of Htool -> Htool build                  ok  4.156e-16 <= 1e-05 (0.05 s)
+check entries of Htool -> hmat-oss build               ok  3.678e-07 <= 1e-05 (0.21 s)
+check entries of Htool -> STARS-H TLR                  ok  6.489e-07 <= 1e-05 (0.13 s)
+check entries of Htool -> H2Opus TLR                   ok  1.256e-06 <= 1e-05 (0.38 s)
+check entries of H2Lib -> Htool build                  ok  4.296e-16 <= 1e-05 (0.05 s)
+check entries of H2Lib -> hmat-oss build               ok  3.678e-07 <= 1e-05 (0.23 s)
+check entries of H2Lib -> STARS-H TLR                  ok  6.489e-07 <= 1e-05 (0.15 s)
+check entries of H2Lib -> H2Opus TLR                   ok  1.256e-06 <= 1e-05 (0.39 s)
+check entries of hmat-oss -> Htool build               ok  6.195e-07 <= 1e-05 (0.06 s)
+check entries of hmat-oss -> hmat-oss build            ok  1.691e-15 <= 1e-05 (0.25 s)
+check entries of hmat-oss -> STARS-H TLR               ok  6.885e-07 <= 1e-05 (0.12 s)
+check entries of hmat-oss -> H2Opus TLR                ok  1.141e-06 <= 1e-05 (0.36 s)
+check entries of STARS-H TLR -> Htool build            ok  7.669e-07 <= 1e-05 (0.14 s)
+check entries of STARS-H TLR -> hmat-oss build         ok  3.838e-07 <= 1e-05 (0.29 s)
+check entries of STARS-H TLR -> STARS-H TLR            ok  4.991e-07 <= 1e-05 (0.16 s)
+check entries of STARS-H TLR -> H2Opus TLR             ok  7.685e-07 <= 1e-05 (0.38 s)
+check entries of H2Opus TLR -> Htool build             ok  5.872e-07 <= 1e-05 (0.17 s)
+check entries of H2Opus TLR -> hmat-oss build          ok  3.748e-07 <= 1e-05 (0.31 s)
+check entries of H2Opus TLR -> STARS-H TLR             ok  5.281e-07 <= 1e-05 (0.18 s)
+check entries of H2Opus TLR -> H2Opus TLR              ok  3.136e-07 <= 1e-05 (0.42 s)
+HMB_TEST_PASSED test_cross_copy: 119 checks; n=1600, 8 x 6 pairs, 4 entry builders

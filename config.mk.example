@@ -11,6 +11,7 @@
 # show typical values for builds installed in system locations (/usr/local, /opt) or left in
 # their source trees. What each build must look like (precision, -D flags, sequential/MPI, ...)
 # is said per library; deps/README.md gives the reasons and the exact build commands.
+# After an edit, the next `make` recompiles and relinks everything the change affects.
 
 DEPS_PREFIX := $(CURDIR)/deps/install
 

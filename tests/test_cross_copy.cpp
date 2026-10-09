@@ -9,6 +9,11 @@
 // H2Opus TLR takes uniform tile partitions only: it must refuse the hierarchical sources
 // with an exception, and accept the TLR ones.
 //
+// Then the entry route from a view: entries_from_neutral serves the entries of every
+// non-symmetric source (including libraries that have no entry access of their own) to every
+// builder that compresses from entries (Htool-DDM, hmat-oss, STARS-H TLR, H2Opus TLR); the
+// rebuilt matrix must match the view to the builders' tolerance.
+//
 // Built by mk/60-cross.mk with -DHMB_WITH_<LIB> for each configured library (at least two).
 #include "hmb/neutral.h"
 #include "hmb/neutral_bridge.hpp"
@@ -47,6 +52,13 @@ struct Source {
     std::string name;
     View view;
     bool uniform_tiles; // a TLR partition: H2Opus TLR must accept it
+    bool from_P;        // built from the non-symmetric problem P (else from S)
+};
+
+// A builder that compresses from entries, as a BlackBox of its result.
+struct Builder {
+    std::string name;
+    std::function<BlackBox(const EntrySource &, const Problem &, const std::vector<int> &perm)> build;
 };
 
 // An imported matrix: its product, and its re-export (null if the library has no exporter).
@@ -75,7 +87,6 @@ int main(int argc, char **argv) {
     Problem P(n, Kernel::Nonsym, Geometry::ShuffledFibonacci); // non-symmetric: transposes show
     Problem S(n, Kernel::Sym, Geometry::RandomSphere);         // for one-triangle storage
     const std::vector<int> permP = bisection_perm(P, tile / 2), permS = bisection_perm(S, tile / 2);
-    (void)permP;
     (void)permS;
 
     // ---- sources ----------------------------------------------------------------------
@@ -84,30 +95,30 @@ int main(int argc, char **argv) {
     {
         HtoolOptions o;
         o.epsilon = eps;
-        sources.push_back({"Htool", htool_export(htool_build(P.entries(), 3, P.xyz.data(), o)), false});
+        sources.push_back({"Htool", htool_export(htool_build(P.entries(), 3, P.xyz.data(), o)), false, true});
         o.symmetry = 'S';
-        sources.push_back({"Htool sym", htool_export(htool_build(S.entries(), 3, S.xyz.data(), o)), false});
+        sources.push_back({"Htool sym", htool_export(htool_build(S.entries(), 3, S.xyz.data(), o)), false, false});
     }
 #endif
 #if defined(HMB_WITH_H2LIB) && defined(HMB_WITH_HTOOL)
     // H2Lib's own export (U = A, V = B, vtrans 1; permutations from its clusters)
-    sources.push_back({"H2Lib", h2lib_export(h2lib_import(*sources[0].view, HMB_H2LIB_COPY)), false});
+    sources.push_back({"H2Lib", h2lib_export(h2lib_import(*sources[0].view, HMB_H2LIB_COPY)), false, true});
 #endif
 #ifdef HMB_WITH_HMAT
     {
         HmatossOptions o;
         o.epsilon = eps;
-        sources.push_back({"hmat-oss", hmatoss_export(hmatoss_build(P.entries(), 3, P.xyz.data(), o)), false});
+        sources.push_back({"hmat-oss", hmatoss_export(hmatoss_build(P.entries(), 3, P.xyz.data(), o)), false, true});
         o.lower_symmetric = true;
-        sources.push_back({"hmat-oss sym", hmatoss_export(hmatoss_build(S.entries(), 3, S.xyz.data(), o)), false});
+        sources.push_back({"hmat-oss sym", hmatoss_export(hmatoss_build(S.entries(), 3, S.xyz.data(), o)), false, false});
     }
 #endif
 #ifdef HMB_WITH_STARSH
     {
         hmb_starsh_tlr_opts o = {tile, eps, tile / 3, 'N', 1};
-        sources.push_back({"STARS-H TLR", starsh_export(starsh_from_entries(P.entries(), permP.data(), o)), true});
+        sources.push_back({"STARS-H TLR", starsh_export(starsh_from_entries(P.entries(), permP.data(), o)), true, true});
         o.symm = 'S';
-        sources.push_back({"STARS-H TLR sym", starsh_export(starsh_from_entries(S.entries(), permS.data(), o)), true});
+        sources.push_back({"STARS-H TLR sym", starsh_export(starsh_from_entries(S.entries(), permS.data(), o)), true, false});
     }
 #endif
 #ifdef HMB_WITH_H2OPUS
@@ -115,7 +126,7 @@ int main(int argc, char **argv) {
         H2opusTlrOptions o;
         o.block_size = tile;
         o.eps = 1e-4; // absolute, per tile
-        sources.push_back({"H2Opus TLR", h2opus_tlr_export(h2opus_tlr_from_entries(P.entries(), permP.data(), o)), true});
+        sources.push_back({"H2Opus TLR", h2opus_tlr_export(h2opus_tlr_from_entries(P.entries(), permP.data(), o)), true, true});
     }
 #endif
 
@@ -158,7 +169,7 @@ int main(int argc, char **argv) {
     char what[160], msg[256];
     for (const Source &s : sources) {
         C.check(hmb_validate(s.view.get(), msg, sizeof msg) == 0, (s.name + " export validates").c_str(), "%s", msg);
-        const BlackBox ref = blackbox_from_neutral(s.view.get(), s.view);
+        const BlackBox ref = blackbox_from_neutral(s.view);
         std::printf("source %-16s %6zu stored values, %5d blocks\n", s.name.c_str(), hmb_stored_values(s.view.get()),
                     s.view->nbl);
         for (const Destination &d : dests) {
@@ -180,8 +191,8 @@ int main(int argc, char **argv) {
                 const double eN = product_diff(I.product, ref, 'N'), eT = product_diff(I.product, ref, 'T');
                 C.check_le(std::max(eN, eT), lossless, (std::string(what) + " product (N, T)").c_str());
                 View back = I.reexport();
-                const double eR = std::max(product_diff(blackbox_from_neutral(back.get(), back), ref, 'N'),
-                                           product_diff(blackbox_from_neutral(back.get(), back), ref, 'T'));
+                const BlackBox again = blackbox_from_neutral(back);
+                const double eR = std::max(product_diff(again, ref, 'N'), product_diff(again, ref, 'T'));
                 C.check(hmb_validate(back.get(), msg, sizeof msg) == 0 && eR <= lossless,
                         (std::string(what) + " re-export").c_str(), "%.3e <= %.0e %s", eR, lossless, msg);
             } catch (const std::exception &e) {
@@ -189,5 +200,52 @@ int main(int argc, char **argv) {
             }
         }
     }
-    return C.finish("n=%d, %zu x %zu pairs", n, sources.size(), dests.size());
+    // ---- the entry route from a view --------------------------------------------------
+    std::vector<Builder> builders;
+#ifdef HMB_WITH_HTOOL
+    builders.push_back({"Htool build", [eps](const EntrySource &E, const Problem &Q, const std::vector<int> &) {
+                            HtoolOptions o;
+                            o.epsilon = eps;
+                            return htool_blackbox(htool_build(E, 3, Q.xyz.data(), o));
+                        }});
+#endif
+#ifdef HMB_WITH_HMAT
+    builders.push_back({"hmat-oss build", [eps](const EntrySource &E, const Problem &Q, const std::vector<int> &) {
+                            HmatossOptions o;
+                            o.epsilon = eps;
+                            return hmatoss_blackbox(hmatoss_build(E, 3, Q.xyz.data(), o));
+                        }});
+#endif
+#ifdef HMB_WITH_STARSH
+    builders.push_back({"STARS-H TLR", [eps, tile](const EntrySource &E, const Problem &, const std::vector<int> &perm) {
+                            hmb_starsh_tlr_opts o = {tile, eps, tile / 3, 'N', 1};
+                            return starsh_blackbox(starsh_from_entries(E, perm.data(), o));
+                        }});
+#endif
+#ifdef HMB_WITH_H2OPUS
+    builders.push_back({"H2Opus TLR", [tile](const EntrySource &E, const Problem &, const std::vector<int> &perm) {
+                            H2opusTlrOptions o;
+                            o.block_size = tile;
+                            o.eps = 1e-4; // absolute, per tile
+                            return h2opus_tlr_blackbox(h2opus_tlr_from_entries(E, perm.data(), o));
+                        }});
+#endif
+    const double rebuilt = 10 * eps; // the builders' tolerances, relative to the view
+    for (const Source &s : sources) {
+        if (!s.from_P) continue;
+        const BlackBox ref = blackbox_from_neutral(s.view);
+        for (const Builder &b : builders) {
+            std::snprintf(what, sizeof what, "entries of %s -> %s", s.name.c_str(), b.name.c_str());
+            try {
+                const double t0 = now();
+                BlackBox R = b.build(entries_from_neutral(s.view), P, permP);
+                const double secs = now() - t0;
+                const double e = std::max(product_diff(R, ref, 'N'), product_diff(R, ref, 'T'));
+                C.check(e <= rebuilt, what, "%.3e <= %.0e (%.2f s)", e, rebuilt, secs);
+            } catch (const std::exception &ex) {
+                C.check(false, what, "threw: %.120s", ex.what());
+            }
+        }
+    }
+    return C.finish("n=%d, %zu x %zu pairs, %zu entry builders", n, sources.size(), dests.size(), builders.size());
 }

@@ -202,9 +202,10 @@ during the first run, 1 to 4 during the second (the final script).
 | H2Opus + Thrust | 0m17s | 0m29s | 43 | 3 | 11 |
 | STARS-H | 0m21s | 0m17s | 9 | 3 | 1 |
 | H2Pack | 0m17s | 0m22s | 15 | 21 | 3 |
-| checks (7 programs) | about 40 s | about 25 s | | | |
+| checks (7 programs) | about 28 s | about 26 s | | 7 | |
 | total | 6m19s | 4m21s | 101 | 98 | 30 |
 
-A re-run with everything up to date takes 27 s (the checks). Sources include the git metadata of
+On a quiet machine, a run from a fresh clone took 3m26s. A re-run with everything up to date
+takes 12-27 s (the checks). Sources include the git metadata of
 the blobless clones (Thrust's CUB submodule is a full clone). `deps/src` and `deps/build` can be
 deleted after a build: `config.mk` and the installed files refer only to the prefix.

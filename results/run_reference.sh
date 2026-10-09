@@ -33,6 +33,8 @@ run 2 copy_htool_h2lib_n4000             copy_htool_h2lib --n 4000
 run 2 copy_htool_h2lib_n4000_leaf10      copy_htool_h2lib --n 4000 --leaf 10
 run 2 copy_htool_h2lib_n4000_inconsistent copy_htool_h2lib --n 4000 --inconsistent
 run 2 copy_htool_h2lib_n20000            copy_htool_h2lib --n 20000
+# every block-copy exporter into every importer, and the entry route from each view
+run 2 test_cross_copy_n1600              test_cross_copy --n 1600
 # block copy, STARS-H TLR -> H2Opus TLR
 run 1 copy_tlr_starsh_h2opus_n4000       copy_tlr_starsh_h2opus --n 4000
 run 1 copy_tlr_starsh_h2opus_n16000      copy_tlr_starsh_h2opus --n 16000

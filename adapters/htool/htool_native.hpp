@@ -3,7 +3,7 @@
 // Use this header in code that already builds or consumes htool::HMatrix objects; code
 // that only moves matrices between libraries should include hmb_htool.hpp instead. Do not
 // include it in a translation unit that also includes H2Opus (conflicting BLAS prototypes)
-// or H2Lib (macros named I, real, ...).
+// or H2Lib (macros I and UINT_MAX, a type named real).
 #pragma once
 #include "hmb_htool.hpp"
 #include "htool_from_entries.hpp"

@@ -1,9 +1,11 @@
 # Gotchas
 
-Library quirks that break transfers, found while building and testing these bridges. Most
-fail silently: the call returns success and the numbers are wrong. Each one has a short id;
-the code that deals with it carries a `GOTCHA(<id>)` comment, so `grep -rn "GOTCHA(<id>)"`
-finds the handling and the tests that cover it.
+Library quirks that break transfers, found while building and testing these bridges. Sixteen
+of them return wrong numbers with a success code; others crash, end the program with exit
+status 0, fail without a message, or leak. Each one has a
+short id; the code that deals with it carries a `GOTCHA(<id>)` comment, so
+`grep -rn "GOTCHA(<id>)"` finds the handling, and each entry below names the tests that cover
+it. Figures quoted from the authors' reports cite `results/notes/`.
 
 Versions: Htool-DDM 0ee4cac, H2Lib 920662c, hmat-oss 45a2fdb, ButterflyPACK a8cf81b,
 H2Opus cbc7985, STARS-H c115e75, H2Pack 2aa58a6 (see `deps/versions.txt`). A quirk may be
@@ -21,7 +23,7 @@ fixed in later versions; the tests will show it.
 | [symmetric-storage](#symmetric-storage) | Htool, hmat-oss, STARS-H, H2Opus, H2Pack | half the matrix missing; 144% error | mirrored / refused, tested |
 | [scalar-type](#scalar-type) | hmat-oss, H2Lib, H2Opus, H2Pack, STARS-H | garbage with success code | refused, tested |
 | [tolerance-stacking](#tolerance-stacking) | entry and matvec routes | missed tolerance (up to 56x) | measured, documented |
-| [inverse-asymmetry](#inverse-asymmetry) | any approximate solve fed to H2Opus | 4.7x larger residual | symmetrized in the chain example |
+| [inverse-asymmetry](#inverse-asymmetry) | any approximate solve fed to H2Opus | 4.3-4.7x larger residual | symmetrized in the chain example |
 | [htool-user-transpose](#htool-user-transpose) | Htool | 'T' product wrong (142%) | handled, tested |
 | [htool-sym-inconsistent](#htool-sym-inconsistent) | Htool | product wrong (67%) | refused, tested |
 | [hmat-epsilon](#hmat-epsilon) | hmat-oss | accuracy capped at 1e-4 | handled, tested |
@@ -115,7 +117,7 @@ fixed in later versions; the tests will show it.
   upper; `get_values` leaves the unstored triangle unwritten, 48.4% of the entries, with rc 0),
   STARS-H ('S'), H2Opus TLR (symmetric type), H2Pack (one block per pair). H2Opus's
   construction from matvecs builds a symmetric H² from AX samples only: a non-symmetric
-  operator gives a silent 144% error.
+  operator gives a silent 144% error (results/notes/matvec.md).
 - **Package.** The neutral form always holds the full matrix: exporters mirror (aliasing
   low-rank factors with swapped roles, copying transposed dense blocks).
   `hmatoss_entries` serves the unstored triangle from the stored one.
@@ -139,8 +141,9 @@ fixed in later versions; the tests will show it.
 - **What happens.** A rebuilt matrix carries both libraries' errors. On the entry route with
   equal tolerances the result is 1.5x less accurate than its source; making the source 100x
   tighter brings it to the accuracy of a direct build. On the matvec route, ButterflyPACK's
-  construction stops early: HODLR lands at 1-7x the requested tolerance, H at a median 4x
-  with a heavy tail (4 of 164 runs above 15x, worst 56x). HARA reached 2-5x.
+  construction stops early: HODLR lands at 0.6-7x the requested tolerance, H at a median 4x
+  with a heavy tail (4 of 164 runs above 15x, worst 56x; results/notes/matvec.md) and 5-13x
+  at N = 4,000-16,000. HARA reached 2-5x.
 - **Package.** Measured, not hidden: the matvec adapters report `check_error` (the error
   against the source on a few random vectors, one extra source call) after every
   construction. Advice: entries route, destination tolerance 10-100x looser than the
@@ -152,10 +155,10 @@ fixed in later versions; the tests will show it.
 ### inverse-asymmetry
 - **What happens.** An approximate solve of a symmetric matrix is not symmetric. A HODLR
   rebuilt from matvecs is symmetric only up to its errors (6e-6 at tolerance 1e-6,
-  N = 4,000), and inverting amplifies them: ‖(S − Sᵀ)x‖/‖Sx‖ = 1.9-2.0e-5 for
+  N = 4,000), and inverting amplifies them: ‖(S − Sᵀ)x‖/‖Sx‖ = 1.9-2.1e-5 for
   ButterflyPACK's solve. HARA (symmetric only), told to assume symmetry, cannot fit the skew
-  part: its H² ends up off by about the asymmetry, with a 4.7x larger residual (5.3e-5 vs
-  1.1e-5) and 30% higher ranks.
+  part: its H² ends up off by about the asymmetry, with a 4.3-4.7x larger residual (5.3e-5
+  vs 1.1-1.2e-5) and 30% higher ranks (results/notes/matvec.md).
 - **Package.** `bpack_solve_blackbox` is flagged non-symmetric.
   `examples/chain_four_libraries.cpp` samples (S + Sᵀ)/2 through the transposed HODLR
   solve; `--assume-symmetric` shows the difference.
@@ -167,8 +170,10 @@ fixed in later versions; the tests will show it.
   `add_hmatrix_matrix_product`) permute the input with the source tree and the output with
   the target tree whatever the operation, which is wrong for 'T' when the trees differ
   (rectangular or imported two-tree matrices): 1.42 relative error.
-- **Package.** `blackbox_from_htool` permutes itself and calls Htool's internal product.
-- **Tests.** `test_htool_copy` (two-tree imports, 'T').
+- **Package.** `blackbox_from_htool` (behind `htool_blackbox`) permutes itself and calls
+  Htool's internal product.
+- **Tests.** `test_htool_copy` (two-tree imports: the adapter's 'T' product at rounding
+  level; Htool's own user-numbering product printed for comparison, 1.42 relative error).
 
 ### htool-sym-inconsistent
 - **What happens.** With symmetric storage ('S') and block-tree consistency off, Htool-DDM's
@@ -232,7 +237,7 @@ fixed in later versions; the tests will show it.
   unless `ErrSol = 1` (or `precon > 1`), and HODLR deletes it during factorization; a matvec
   afterwards segfaults.
 - **Package.** `BpackOptions::keep_forward` (default true) sets ErrSol; it doubles the memory
-  of H (31.4 vs 15.7 MB at N = 2,000). `bpack_blackbox` throws instead of crashing on an H
+  of H (21.4 vs 10.8 MB at N = 1,500, test_bpack_safety). `bpack_blackbox` throws instead of crashing on an H
   matrix built without it. `bpack_factor` records the factorization; with
   `keep_forward = false`, products of a factored HODLR throw `std::logic_error`.
 - **Tests.** `test_bpack_safety`, `test_bpack_solve`; every ButterflyPACK test multiplies
@@ -340,9 +345,9 @@ busy machine with spinning threads. `tests/run_tests.sh` sets `OMP_WAIT_POLICY=p
 ## Build and link
 
 ### header-clash
-- **What happens.** H2Lib's headers define macros `I`, `real` and `UINT_MAX`; Htool-DDM and
-  H2Opus declare the Fortran BLAS prototypes with different `const`; H2Lib compiles without
-  `-fPIC`.
+- **What happens.** H2Lib's headers define the macros `I` and `UINT_MAX` and a type named
+  `real`; Htool-DDM and H2Opus declare the Fortran BLAS prototypes with different `const`;
+  H2Lib compiles without `-fPIC`.
 - **Package.** Each library lives in its own translation units; neutral-facing headers
   (`hmb_*.h*`) never include a library header, so any combination compiles together
   (`LAYOUT.md`). libh2.a is linked statically into executables.

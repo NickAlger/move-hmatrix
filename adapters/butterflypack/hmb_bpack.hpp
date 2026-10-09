@@ -29,12 +29,12 @@
 //    ButterflyPACK calls it from one thread at a time, in blocks of rank0 + 1, then
 //    rankrate times more vectors per retry (HODLR up to 257 at N = 4,000 and 513 at 16,000;
 //    H up to 63). Measured (smooth kernel on a sphere, Htool source at 1e-6, one thread,
-//    N = 4,000-16,000): HODLR 4,100-8,100 sampling vectors, 930-1,360 times the time of one
-//    single-vector source matvec; H 5,900-10,000 vectors, 1,400-2,000 times. The source's
-//    products take 55-75% of that time.
+//    N = 4,000-16,000; RESULTS.md and the study): HODLR 4,060-8,400 sampling vectors,
+//    930-1,410 times the time of one single-vector source matvec; H 5,900-11,000 vectors,
+//    1,380-2,020 times. The source's products take 54-71% of that time.
 //  - bpack_from_entries: ButterflyPACK's own compression from entries, the "direct"
 //    baseline: 1 N^2 (HODLR) and 2.5 N^2 (H) entries at N = 4,000, 0.4 and 1 N^2 at 16,000;
-//    1.6-3.7 times faster than the matvec route. The EntrySource receives lists of
+//    1.6-4.4 times faster than the matvec route. The EntrySource receives lists of
 //    sub-blocks (ButterflyPACK's block callback, elem_extract = 2), one call at a time (so
 //    EntrySource::thread_safe does not matter): 1,000 times fewer calls than single entries,
 //    with the same entries and result.
@@ -42,8 +42,8 @@
 // Accuracy, GOTCHA(tolerance-stacking): on the matvec route ButterflyPACK accepts a level as
 // soon as the rank it detects is below its number of samples, and H first tries each level
 // with only the previous level's rank + 1 samples and no error test. The result misses the
-// tolerance, H sometimes by far. Errors against the source at tolerance 1e-6: HODLR 1-2x at
-// N = 1,500-2,000 and 4-7x at 4,000-16,000; H 6-8x at 4,000-16,000, and over 164 runs at
+// tolerance, H sometimes by far. Errors against the source at tolerance 1e-6: HODLR 0.6-1.6x
+// at N = 1,500-2,000 and 4-7x at 4,000-16,000; H 5-13x at 4,000-16,000, and over 164 runs at
 // N = 1,500-2,000 median 4x, 90th percentile 8x, 4 runs above 15x (worst 56x). At 1e-7, H
 // reached 1.0-3.2e-6. Ask about 10x tighter than the accuracy you need and read
 // BpackStats::check_error, measured after every matvec construction (check_vectors products
@@ -62,7 +62,7 @@
 //    process with that status (default 70) instead of 0, skipping the exit handlers
 //    registered before it. With ButterflyPACK's own sampling defaults (rank0
 //    32, rankrate 1.2, itermax 10) a HODLR of N = 4,000 stops (its top rank is 233); this
-//    adapter's defaults (64, 2, 10) reach 513 samples in 4 tries (top rank 426 at 16,000).
+//    adapter's defaults (64, 2, 10) reach 513 samples in 4 tries (top rank 420-460 at 16,000).
 //  - GOTCHA(bpack-global-state): each construction sets the OpenMP thread count to
 //    $OMP_NUM_THREADS (1 when unset) and reseeds Fortran's random number generator from
 //    the clock and the process id. The adapter restores the caller's thread count after

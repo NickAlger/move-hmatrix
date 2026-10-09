@@ -13,7 +13,7 @@ include/hmb/          library-neutral interfaces (no third-party headers)
   blackbox.hpp        hmb::BlackBox: matvec operator (matvec route)
   entry_source.hpp    hmb::EntrySource: entry oracle (entry route)
   neutral_bridge.hpp  any neutral view as a BlackBox or an EntrySource
-src/                  libhmb.a: implementation of the neutral utilities (no dependencies)
+src/                  libhmb.a: implementation of the neutral utilities (needs only BLAS)
 adapters/<lib>/       one directory per library (htool, h2lib, hmatoss, butterflypack,
                       h2opus, starsh); see "Adapters" below
 tools/h2pack/         file-based bridge for H2Pack (writer of H2Pack's on-disk format)
@@ -31,8 +31,8 @@ results/              RESULTS.md's raw logs (logs/), the script that re-runs the
 | Route | Interface | Cost (measured) | Accuracy |
 |---|---|---|---|
 | Block copy | `hmb_hmatrix` (exporter -> importer) | ~1-11 source matvecs | lossless |
-| Rebuild from entries | `hmb::EntrySource` | ~60-80 source matvecs | recompression at the destination's tolerance |
-| Rebuild from matvecs | `hmb::BlackBox` | ~1,100-3,300 source matvecs | randomized construction at the destination's tolerance |
+| Rebuild from entries | `hmb::EntrySource` | ~60-80 source matvecs into ACA destinations (Htool-DDM, hmat-oss); ButterflyPACK and TLR destinations request O(N²) entries | both libraries' errors add |
+| Rebuild from matvecs | `hmb::BlackBox` | ~1,100-3,300 source matvecs | can miss the tolerance several-fold |
 
 `include/hmb/neutral_bridge.hpp` turns any exported view into an EntrySource or a BlackBox,
 so every exporter also feeds the two rebuild routes.
@@ -60,7 +60,7 @@ Each library gets `adapters/<lib>/`. Two kinds of header:
   neutral-facing headers can be included in one translation unit.
 - **Native headers** `<lib>_native.hpp` (or `.h`) include the library and expose its types,
   for users who already hold that library's objects. Never include the native headers of two
-  libraries in one translation unit: H2Lib defines macros named `I`, `real` and `UINT_MAX`;
+  libraries in one translation unit: H2Lib defines the macros `I` and `UINT_MAX` and a type `real`;
   Htool and H2Opus declare the same Fortran BLAS prototypes with different `const`.
 
 Implementation files (`.c` / `.cpp`) in the adapter directory are compiled one per
@@ -71,7 +71,8 @@ never shadow one of the library's own headers.
 Naming: C functions `hmb_<lib>_<verb>` (e.g. `hmb_h2lib_import`); C++ functions in namespace
 `hmb`, named `<lib>_<verb>` (e.g. `hmb::htool_build`). Exporters are `*_export`, block-copy
 importers `*_import`, rebuild importers `*_from_entries` / `*_from_matvec`, and
-`*_blackbox` / `*_entries` expose a library's matrix through the common interfaces. C++ types
+`*_blackbox` / `*_entries` expose a library's matrix through the common interfaces
+(`htool_build` and `hmatoss_build` are the entry-route builders of those two libraries). C++ types
 are `<Lib>Handle` (a `std::shared_ptr` to the library's matrix), `<Lib>Options`,
 `<Lib>Stats`, with only the first letter of the library capitalized (`H2opusTlrHandle`).
 
@@ -81,9 +82,12 @@ source handle), so the view stays valid on its own; an importer takes `const hmb
 and returns a handle; `*_blackbox` returns a `BlackBox` that keeps its matrix alive.
 
 Errors: C functions return 0 on success and a negative code otherwise, with a message in
-an optional `char *msg, size_t msglen` argument; C++ functions throw `std::runtime_error` (or
-`std::invalid_argument`) whose message starts with the function name, e.g.
-`"hmb::bpack_from_matvec: ..."`.
+an optional `char *msg, size_t msglen` argument; C++ functions throw `std::invalid_argument`,
+`std::runtime_error` or (for an operation the matrix's state does not allow, e.g. a product
+with a ButterflyPACK H matrix built without its forward operator) `std::logic_error`, whose
+message starts with the function name, e.g. `"hmb::bpack_from_matvec: ..."`. One failure
+cannot be caught: ButterflyPACK ends the process when its sampling does not converge (the
+adapter turns the exit status 0 into 70 and prints why, GOTCHA(fortran-stop)).
 
 Ownership: an exporter never copies leaf data it can alias; it says in its header comment
 how long the source must stay alive. An importer copies by default; a borrowing mode, if
@@ -96,15 +100,18 @@ listed in GOTCHAS.md, so the explanation and the code can be found from each oth
 ## Build
 
 GNU make. `Makefile` reads the configuration (`config.mk`, else
-`deps/install/config.mk`), sets `HAVE_<LIB>` for each configured library, then includes
-`mk/*.mk` in sorted order:
+`deps/install/config.mk`), records it in `$(B)/config.stamp` (every object depends on that
+file, which changes only when a configuration value or a configured static library does),
+sets `HAVE_<LIB>` for each configured library, then includes `mk/*.mk` in sorted order:
 
 | Fragment | Contents |
 |---|---|
 | `mk/10-core.mk` | tests of the neutral utilities |
 | `mk/20-<lib>.mk` | the library's adapter objects (`<LIB>_OBJS`) and single-library tests |
+| `mk/21-htool-copy.mk`, `mk/22-h2opus-tlr.mk` | second parts of the Htool-DDM and H2Opus adapters |
 | `mk/50-<route>.mk` | examples and tests that combine several libraries |
 | `mk/60-cross.mk` | every block-copy exporter into every block-copy importer |
+| `mk/90-archives.mk` | one archive per adapter, `build/lib/libhmb_<lib>.a`, and their link lines in `make info` |
 
 Rules for fragments:
 

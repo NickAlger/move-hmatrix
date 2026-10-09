@@ -1,10 +1,13 @@
 # hmatrix-bridges: top-level Makefile (GNU make).
 #
 #   make            build libhmb.a and every adapter, example and test whose libraries
-#                   are configured
+#                   are configured, and one archive per adapter (build/lib/libhmb_<lib>.a)
 #   make check      build, then run all tests and examples (tests/run_tests.sh)
-#   make info       show which libraries are enabled and what will be built
+#   make info       show which libraries are enabled, what will be built, and the link
+#                   flags for using the archives from your own program
 #   make clean
+#   make B=<dir>    any of the above in build directory <dir> instead of build/ (for
+#                   example a sanitizer build next to the normal one; see LAYOUT.md)
 #
 # Library locations come from a configuration file: ./config.mk if it exists (hand-written,
 # start from config.mk.example), otherwise deps/install/config.mk (written by
@@ -35,6 +38,17 @@ OPT       ?= -O2
 OPENMP    ?= -fopenmp
 BLAS_LIBS ?= -llapack -lblas
 PYTHON    ?= python3
+
+# ---- rebuild when the configuration changes ---------------------------------------------
+# $(B)/config.stamp records every configuration value and the time stamps of the static
+# libraries the configuration names. It is rewritten only when that record changes, and
+# every object depends on it: editing config.mk, overriding a variable on the command line,
+# or rebuilding a static library in place recompiles and relinks what depends on it.
+CONFIG_VARS   := CC CXX FC OPT OPENMP BLAS_LIBS PYTHON HTOOL_CPPFLAGS H2LIB_CPPFLAGS H2LIB_LIBS \
+                 HMAT_CPPFLAGS HMAT_LIBS BPACK_CPPFLAGS BPACK_LIBS H2OPUS_CPPFLAGS H2OPUS_LIBS \
+                 STARSH_CPPFLAGS STARSH_LIBS H2PACK_CPPFLAGS H2PACK_LIBS
+CONFIG_STATIC := $(wildcard $(filter %.a %.o,$(H2LIB_LIBS) $(BPACK_LIBS) $(H2OPUS_LIBS) $(STARSH_LIBS) $(H2PACK_LIBS)))
+CONFIG_STAMP   = $(B)/config.stamp
 
 # ---- library switches -------------------------------------------------------------------
 HAVE_HTOOL  := $(if $(strip $(HTOOL_CPPFLAGS)),1)
@@ -80,6 +94,23 @@ INFO_EXTRA    :=
 
 .DEFAULT_GOAL := all
 
+define NEWLINE
+
+
+endef
+# (not for `make clean`, `make info` or a dry run `make -n`)
+ifneq ($(filter-out clean info,$(MAKECMDGOALS)),$(if $(MAKECMDGOALS),,x))
+ifeq ($(findstring n,$(firstword -$(MAKEFLAGS))),)
+$(shell mkdir -p $(B))
+$(file >$(CONFIG_STAMP).new,$(foreach v,$(CONFIG_VARS),$(v)=$($(v))$(NEWLINE))$(if $(CONFIG_STATIC),$(shell stat -c '%n %Y' $(CONFIG_STATIC))))
+$(shell cmp -s $(CONFIG_STAMP).new $(CONFIG_STAMP) && rm -f $(CONFIG_STAMP).new || mv -f $(CONFIG_STAMP).new $(CONFIG_STAMP))
+endif
+endif
+# (re)created by `make clean all` in one invocation; the next run records the real values
+$(CONFIG_STAMP):
+	@mkdir -p $(@D)
+	@echo "created after clean" > $@
+
 include $(sort $(wildcard mk/*.mk))
 
 all: $(LIBHMB) $(EXAMPLES) $(TESTS) $(TOOLS)
@@ -90,11 +121,11 @@ $(LIBHMB): $(CORE_OBJS)
 
 # ---- generic compile rules (fragments add flags through EXTRA_CFLAGS / EXTRA_CXXFLAGS,
 #      set as pattern-specific variables on object files, never on executables) -----------
-$(OBJ)/%.o: %.c
+$(OBJ)/%.o: %.c $(CONFIG_STAMP)
 	@mkdir -p $(@D)
 	$(CC) $(HMB_CPPFLAGS) $(EXTRA_CFLAGS) $(HMB_CFLAGS) -MMD -MP -c $< -o $@
 
-$(OBJ)/%.o: %.cpp
+$(OBJ)/%.o: %.cpp $(CONFIG_STAMP)
 	@mkdir -p $(@D)
 	$(CXX) $(HMB_CPPFLAGS) $(EXTRA_CXXFLAGS) $(HMB_CXXFLAGS) -MMD -MP -c $< -o $@
 

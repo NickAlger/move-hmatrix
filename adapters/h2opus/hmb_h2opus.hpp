@@ -27,16 +27,17 @@
 //    asymmetry ||(A - A^T) x|| / ||A x||, which HARA cannot fit. An operator that is symmetric
 //    only up to errors above the tolerance, such as a solve with an approximate factorization
 //    (GOTCHA(inverse-asymmetry)), is better sampled as (A + A^T) / 2: at N = 4,000 that gave a
-//    4.5x smaller residual and 23% smaller ranks (examples/chain_four_libraries.cpp).
+//    4.3-4.7x smaller residual and 23% smaller ranks (examples/chain_four_libraries.cpp).
 //  - Real double only (GOTCHA(scalar-type)): checked at compile time.
 //  - block_size 16 or 32 (H2Opus asserts and aborts otherwise).
 //
 // Tolerance and cost: HARA takes an ABSOLUTE threshold. The adapter estimates ||A||_2 by
 // power iteration on the black box (up to 2 x norm_iterations single-vector products) and
 // passes tolerance * ||A||_2. Measured (smooth kernel on a sphere, Htool source at 1e-6,
-// tolerance 1e-6, one thread, N = 4,000-16,000): errors against the source of 2.0-4.6e-6;
-// 2,060-4,170 sampling vectors in 75-141 calls; 2,900-4,800 times one single-vector source
-// matvec, most of it in HARA's own recompression (horthog + hcompress after every block of
+// tolerance 1e-6, one thread, N = 4,000-16,000; RESULTS.md): errors against the source of
+// 2.0-4.6e-6; 2,060-4,170 sampling vectors in 75-141 calls; 2,700-3,300 times one
+// single-vector source matvec (2,900-4,800 in the study, whose source matvec was faster),
+// most of it in HARA's own recompression (horthog + hcompress after every block of
 // samples), not in the source. The per-level cap max_samples silently limits the ranks: a
 // cap that is too small overshoots the tolerance without any warning; check_error (a few
 // products of the source against the rebuilt matrix, measured after every construction)

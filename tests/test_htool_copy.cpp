@@ -454,13 +454,18 @@ void check_import(Checker &C, const char *tag, const hmb_hmatrix &v, bool has_em
         ref.apply('N', 2, X.data(), Y2.data());
         std::snprintf(what, sizeof what, "%s htool_blackbox N vs view", tag);
         C.check_le(relerr(Y1, Y2), kRound, what);
-        if (B->col_tree && v.n_rows == v.n_cols) { // GOTCHA(htool-user-transpose), shown not checked
-            std::vector<double> Z = randvec(size_t(v.n_rows) * 2, 37), W1(Z.size()), W2(Z.size());
+        if (B->col_tree && v.n_rows == v.n_cols) { // GOTCHA(htool-user-transpose)
+            std::vector<double> Z = randvec(size_t(v.n_rows) * 2, 37), W1(Z.size()), W2(Z.size()), W3(Z.size());
             bb.apply('T', 2, Z.data(), W1.data());
             ref.apply('T', 2, Z.data(), W2.data());
-            const double e = relerr(W1, W2);
-            std::printf("  note: htool_blackbox 'T' with two different trees: relative error %.2e%s\n", e,
-                        e > kRound ? " (Htool's user-numbering product permutes with the wrong trees)" : "");
+            std::snprintf(what, sizeof what, "%s htool_blackbox T vs view (two trees)", tag);
+            C.check_le(relerr(W1, W2), kRound, what);
+            // Htool's own user-numbering product, which the adapter avoids, for comparison
+            htool::MatrixView<const double> Zv(v.n_rows, 2, Z.data());
+            htool::MatrixView<double> W3v(v.n_cols, 2, W3.data());
+            htool::add_hmatrix_matrix_product('T', 'N', 1.0, *B->A, Zv, 0.0, W3v);
+            std::printf("  note: Htool's own user-numbering 'T' product with two trees: relative error %.2e\n",
+                        relerr(W3, W2));
         }
     }
     HtoolExportInfo xi;

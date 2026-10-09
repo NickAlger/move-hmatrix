@@ -3,7 +3,7 @@
 // For code that builds or consumes TTLR_Matrix objects itself; code that only moves
 // matrices between libraries should include hmb_h2opus_tlr.hpp instead. Do not include it in
 // a translation unit that also includes Htool (conflicting Fortran BLAS prototypes) or H2Lib
-// (macros named I, real, ...): GOTCHA(header-clash).
+// (macros I and UINT_MAX, a type named real): GOTCHA(header-clash).
 #pragma once
 #include "hmb_h2opus_tlr.hpp"
 
