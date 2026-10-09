@@ -83,6 +83,7 @@ const hmb_hmatrix *hmb_cstore_finalize(hmb_cstore *s) {
   s->A.nbl = s->nbl;
   s->A.bl = s->bl;
   s->A.sons = s->sons;
+  s->A.sons_len = s->nsons;
   if (s->row_perm) s->A.row_perm = s->row_perm;
   if (s->col_perm) s->A.col_perm = s->col_perm;
   return &s->A;

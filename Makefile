@@ -95,7 +95,7 @@ $(OBJ)/%.o: %.cpp
 	$(CXX) $(HMB_CPPFLAGS) $(EXTRA_CXXFLAGS) $(HMB_CXXFLAGS) -MMD -MP -c $< -o $@
 
 check: all
-	@./tests/run_tests.sh $(TESTS) $(EXAMPLES) $(SCRIPT_CHECKS)
+	@HMB_LOGDIR=$(B)/test-logs ./tests/run_tests.sh $(TESTS) $(EXAMPLES) $(SCRIPT_CHECKS)
 
 info:
 	@echo "config:    $(if $(wildcard $(CONFIG)),$(CONFIG),$(CONFIG) (missing))"

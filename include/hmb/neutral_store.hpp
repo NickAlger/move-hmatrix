@@ -28,6 +28,7 @@ struct NeutralStore {
         A.nbl  = (int)bl.size();
         A.bl   = bl.data();
         A.sons = sons.data();
+        A.sons_len = (int)sons.size();
         if (!row_perm.empty()) A.row_perm = row_perm.data();
         if (!col_perm.empty()) A.col_perm = col_perm.data();
         return &A;

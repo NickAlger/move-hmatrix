@@ -18,9 +18,10 @@
  *    (nsons == 0 for a leaf). Row and column trees may share clusters.
  *  - bl[0] is the root block; it pairs row_root with col_root.
  *  - An HMB_SUPER block has rsons x csons children. Child (i, j) is
- *    bl[sons[son0 + i + j * rsons]]; its rc / cc fields name its clusters explicitly
- *    (normally the i-th son of rc and the j-th son of cc; a side that is not split has
- *    rsons == 1 or csons == 1 and keeps the parent's cluster).
+ *    bl[sons[son0 + i + j * rsons]]. A side that is split uses all sons of its cluster:
+ *    rsons == cl[rc].nsons and child (i, j) has rc == cl[rc].son0 + i. A side that is not
+ *    split has rsons == 1 and the children keep the parent's cluster. Same for columns.
+ *    Every block is reached from bl[0] exactly once.
  *  - An HMB_LOWRANK leaf of size rows x cols is
  *      U * V    (vtrans == 0: V is rank x cols, leading dimension ldV), or
  *      U * V^T  (vtrans == 1: V is cols x rank, leading dimension ldV),
@@ -67,6 +68,7 @@ typedef struct {
   const hmb_cluster *cl;
   int nbl;                 /* bl[0] is the root block */
   const hmb_block *bl;
+  int sons_len;            /* length of sons[] */
   const int *sons;         /* child lists of HMB_SUPER blocks */
 } hmb_hmatrix;
 
@@ -75,9 +77,10 @@ typedef struct {
 /* Number of scalars stored in the leaves. */
 size_t hmb_stored_values(const hmb_hmatrix *A);
 
-/* Structural checks: sons partition their parents, the block tree tiles the
- * matrix exactly once, leaf dimensions and leading dimensions are consistent.
- * Returns 0 if valid; otherwise writes a reason into msg (if msg != NULL). */
+/* Structural checks: permutations are permutations, sons partition their parents, the
+ * block tree follows the cluster trees and tiles the matrix exactly once, leaf pointers
+ * and leading dimensions are consistent. Returns 0 if valid; otherwise a negative value,
+ * with a reason in msg (if msg != NULL). Cost O(ncl + nbl + n_rows + n_cols). */
 int hmb_validate(const hmb_hmatrix *A, char *msg, size_t msglen);
 
 /* H2Lib "strictness" (needed by H2Lib's H -> H2 conversion):
@@ -91,10 +94,20 @@ void hmb_matvec(const hmb_hmatrix *A, char trans, int nrhs,
                 const double *X, int ldx, double *Y, int ldy);
 
 /* out(i, j) = A(rows[i], cols[j]) for ORIGINAL 0-based indices; out is m x n,
- * column-major, leading dimension ldo. Cost: one tree descent per entry plus a
- * dot product of length rank for entries in low-rank leaves. */
+ * column-major, leading dimension ldo. The request is split down the block tree, so the
+ * cost is about (m + n) * depth plus a dot product of length rank for each entry that
+ * falls in a low-rank leaf. Computes the inverse permutations on each call (O(n_rows +
+ * n_cols)); for many small requests, compute them once and use hmb_entries_ip. */
 void hmb_entries(const hmb_hmatrix *A, int m, const int *rows, int n, const int *cols,
                  double *out, int ldo);
+
+/* iperm[original index] = permuted position, for rows (irow, length n_rows) and columns
+ * (icol, length n_cols). Either pointer may be NULL to skip it. */
+void hmb_inverse_perms(const hmb_hmatrix *A, int *irow, int *icol);
+
+/* hmb_entries with precomputed inverse permutations (from hmb_inverse_perms). */
+void hmb_entries_ip(const hmb_hmatrix *A, const int *irow, const int *icol, int m, const int *rows,
+                    int n, const int *cols, double *out, int ldo);
 
 #ifdef __cplusplus
 }
