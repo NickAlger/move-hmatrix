@@ -1,4 +1,4 @@
-// hmatrix-bridges: Htool-DDM block copy. Exports an Htool H-matrix to the neutral view and
+// move-hmatrix: Htool-DDM block copy. Exports an Htool H-matrix to the neutral view and
 // imports a neutral view into Htool, both lossless (no recompression).
 //
 // Includes no Htool header: Htool's types appear in the native headers htool_export.hpp and

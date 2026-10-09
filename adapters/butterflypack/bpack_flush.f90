@@ -1,4 +1,4 @@
-! hmatrix-bridges: flush the Fortran runtime's standard output and error units from C++.
+! move-hmatrix: flush the Fortran runtime's standard output and error units from C++.
 !
 ! Used by the ButterflyPACK adapter's exit handler (GOTCHA(fortran-stop)): when it replaces
 ! the exit status of a Fortran STOP it ends the process with _Exit, which skips the Fortran

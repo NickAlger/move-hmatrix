@@ -1,4 +1,4 @@
-// hmatrix-bridges: an entry oracle, the common currency of the entry route.
+// move-hmatrix: an entry oracle, the common currency of the entry route.
 #pragma once
 #include <functional>
 

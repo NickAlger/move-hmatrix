@@ -1,4 +1,4 @@
-// hmatrix-bridges: Htool-DDM block copy (export to and import from the neutral view).
+// move-hmatrix: Htool-DDM block copy (export to and import from the neutral view).
 // Conventions and limits: hmb_htool_copy.hpp.
 #include "htool_export.hpp"
 #include "htool_import.hpp"

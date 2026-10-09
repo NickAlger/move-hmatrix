@@ -1,4 +1,4 @@
-// hmatrix-bridges: owning container behind an hmb_hmatrix view (C++ exporters).
+// move-hmatrix: owning container behind an hmb_hmatrix view (C++ exporters).
 // Exporters that can alias the source's storage only fill cl / bl / sons; exporters
 // that must copy (a transpose, a stream they parsed) allocate leaf data with alloc().
 #pragma once

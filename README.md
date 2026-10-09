@@ -1,4 +1,4 @@
-# hmatrix-bridges
+# move-hmatrix
 
 Glue code that moves hierarchical matrices between seven open-source H-matrix libraries
 (Htool-DDM, H2Lib, hmat-oss, ButterflyPACK, H2Opus, STARS-H and H2Pack), with tests that pin
@@ -34,7 +34,8 @@ thread; RESULTS.md has the numbers and GOTCHAS.md the traps.
 | ButterflyPACK | - | - | `bpack_from_entries` (HODLR, H) | `bpack_from_matvec` (HODLR, H) | `bpack_blackbox` | `bpack_factor`, `bpack_solve_blackbox` |
 | H2Pack | - | file writer `tools/h2pack/h2pack_write.py` (real symmetric H², from numpy arrays) | - | - | - | file-based, see `tools/h2pack/` |
 
-Everything is in namespace `hmb`; H2Lib and STARS-H also have C APIs (`hmb_h2lib_*`,
+Everything is in namespace `hmb` (short for H-matrix bridges, the package's working name; file
+and function prefixes use it too); H2Lib and STARS-H also have C APIs (`hmb_h2lib_*`,
 `hmb_starsh_*`). Moving a matrix from library X to library Y is one of three lines, where
 `hx` is X's handle:
 
@@ -141,7 +142,7 @@ To build your own program against the package, `make` leaves one archive per ada
 `build/lib/`, and `make info` prints, for each archive, the library flags to link it with:
 
 ```sh
-HMB=/path/to/hmatrix-bridges
+HMB=/path/to/move-hmatrix
 g++ -std=c++17 -O2 -fopenmp -I$HMB/include -I$HMB/adapters/htool -I$HMB/adapters/h2lib \
     -I$HMB/adapters/butterflypack my.cpp \
     $HMB/build/lib/libhmb_htool.a $HMB/build/lib/libhmb_h2lib.a $HMB/build/lib/libhmb_bpack.a \
@@ -225,4 +226,7 @@ LAYOUT.md has the conventions for adding a library or a route.
 
 `deps/versions.txt` has the full commits, dates and build options. A program that links
 hmat-oss is subject to its GPL; H2Lib's LGPL applies to programs that link `libh2.a`
-statically, as the package does. This package's own licence has not been chosen yet.
+statically, as the package does.
+
+This package is released under the MIT licence (`LICENSE`). It contains no code from the
+libraries above: `deps/build_deps.sh` downloads them from their own repositories.

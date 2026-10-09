@@ -1,4 +1,4 @@
-// hmatrix-bridges: hmat-oss serialization stream, structure part (internal to the adapter).
+// move-hmatrix: hmat-oss serialization stream, structure part (internal to the adapter).
 //
 // hmat-oss writes a matrix as two streams through user callbacks (hmat.h write_struct /
 // write_data; format in hmat-oss src/serialization.cpp, which documents nothing):

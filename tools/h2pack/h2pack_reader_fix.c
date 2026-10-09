@@ -1,4 +1,4 @@
-/* hmatrix-bridges: link-time fix for H2Pack's file reader; see h2pack_reader_fix.h.
+/* move-hmatrix: link-time fix for H2Pack's file reader; see h2pack_reader_fix.h.
  * Link with -Wl,--wrap=H2P_calc_node_inadm_lists. */
 #include "h2pack_reader_fix.h"
 

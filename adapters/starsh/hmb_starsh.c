@@ -1,4 +1,4 @@
-/* hmatrix-bridges: STARS-H adapter (see hmb_starsh.h). The only translation unit that
+/* move-hmatrix: STARS-H adapter (see hmb_starsh.h). The only translation unit that
  * includes STARS-H's headers. */
 #include "hmb_starsh.h"
 
@@ -37,7 +37,7 @@ static int fail(char *msg, size_t msglen, const char *fmt, ...) {
 static void *xmalloc(size_t bytes) {
   void *p = malloc(bytes ? bytes : 1);
   if (!p) {
-    fprintf(stderr, "hmatrix-bridges (STARS-H adapter): out of memory (%zu bytes)\n", bytes);
+    fprintf(stderr, "move-hmatrix (STARS-H adapter): out of memory (%zu bytes)\n", bytes);
     abort();
   }
   return p;
@@ -231,7 +231,7 @@ int hmb_starsh_import(const hmb_hmatrix *A, hmb_starsh **out, char *msg, size_t 
   h->R = make_cluster(nr, A->row_perm, rr, mr);
   h->C = shared ? h->R : make_cluster(nc, A->col_perm, cr, mc);
   STARSH_int shape[2] = {nr, nc};
-  char name[] = "hmatrix-bridges import";
+  char name[] = "move-hmatrix import";
   int info = (!h->R || !h->C) ? STARSH_MALLOC_ERROR
                               : starsh_problem_new(&h->P, 2, shape, 'N', 'd', h, h, stored_kernel, name);
   if (info != STARSH_SUCCESS) {
@@ -411,7 +411,7 @@ int hmb_starsh_from_entries(int n, const int *perm, hmb_starsh_entry_fn *entries
   free(rg);
   entry_ctx ec = {entries, ctx, o->thread_safe};
   STARSH_int shape[2] = {n, n};
-  char name[] = "hmatrix-bridges entries";
+  char name[] = "move-hmatrix entries";
   int info = !h->R ? STARSH_MALLOC_ERROR
                    : starsh_problem_new(&h->P, 2, shape, o->symm, 'd', &ec, &ec, entry_kernel, name);
   if (info == STARSH_SUCCESS) {

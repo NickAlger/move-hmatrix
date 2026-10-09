@@ -46,7 +46,7 @@ I found five library defects, beyond the eight quirks in §5:
   `tests/test_starsh_lsan.supp` merged into it, applied by `tests/run_tests.sh`), and the
   Makefile's `TOOLS` (now used by `mk/20-h2pack.mk`).
 
-## 1. Files (under /root/hmatrix-bridges)
+## 1. Files (under /root/move-hmatrix)
 
 | File | Purpose |
 |---|---|

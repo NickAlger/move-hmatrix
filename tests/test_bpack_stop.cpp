@@ -97,7 +97,7 @@ int main(int argc, char **argv) {
         C.check(false, "create a temporary directory");
         return C.finish();
     }
-    const char *diag = "hmatrix-bridges: the process is exiting while ButterflyPACK builds a HODLR matrix from matvecs";
+    const char *diag = "move-hmatrix: the process is exiting while ButterflyPACK builds a HODLR matrix from matvecs";
 
     Run r = run_child(self, tmpl, "hopeless");
     C.check(r.exited && r.status == 70, "STOP: exit status replaced by stop_exit_status", "status %d, want 70", r.status);
@@ -116,7 +116,7 @@ int main(int argc, char **argv) {
     r = run_child(self, tmpl, "ok");
     C.check(r.exited && r.status == 0 && r.out_has("CHILD-RETURNED"), "normal construction returns", "status %d",
             r.status);
-    C.check(!r.err_has("hmatrix-bridges:"), "no diagnostic after a normal construction and exit");
+    C.check(!r.err_has("move-hmatrix:"), "no diagnostic after a normal construction and exit");
 
     rmdir(tmpl.c_str());
     return C.finish();

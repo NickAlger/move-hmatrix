@@ -1,4 +1,4 @@
-/* hmatrix-bridges: read an H2Pack file set with H2P_read_from_file, multiply, compare.
+/* move-hmatrix: read an H2Pack file set with H2P_read_from_file, multiply, compare.
  *
  * usage: h2pack_read_check --meta F_meta.json --aux F_aux.json --bin F.bin
  *            --x X.bin --y Y.bin [--nrhs K] [--tol T]

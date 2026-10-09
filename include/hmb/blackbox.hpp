@@ -1,4 +1,4 @@
-// hmatrix-bridges: a black-box operator, the common currency of the matvec route.
+// move-hmatrix: a black-box operator, the common currency of the matvec route.
 #pragma once
 #include <functional>
 

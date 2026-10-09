@@ -1,4 +1,4 @@
-// hmatrix-bridges: ButterflyPACK adapter, native side (includes ButterflyPACK's C header).
+// move-hmatrix: ButterflyPACK adapter, native side (includes ButterflyPACK's C header).
 //
 // For code that goes on from a matrix built by bpack_from_matvec / bpack_from_entries to
 // ButterflyPACK operations the adapter does not wrap (d_c_bpack_solve, d_c_bpack_logdet,

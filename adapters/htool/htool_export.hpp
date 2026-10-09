@@ -1,4 +1,4 @@
-// hmatrix-bridges: Htool-DDM export to the neutral view, native side (includes Htool).
+// move-hmatrix: Htool-DDM export to the neutral view, native side (includes Htool).
 //
 // For code that holds htool::HMatrix objects not wrapped in an hmb::HtoolHandle (built by its
 // own code, or reached through Htool's DistributedOperator on one process). Conventions,

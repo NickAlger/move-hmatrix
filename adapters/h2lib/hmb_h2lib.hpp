@@ -1,4 +1,4 @@
-// hmatrix-bridges: H2Lib adapter, C++ conveniences over hmb_h2lib.h: handles (shared
+// move-hmatrix: H2Lib adapter, C++ conveniences over hmb_h2lib.h: handles (shared
 // ownership), exceptions, BlackBox. Includes no H2Lib header. Conventions: hmb_h2lib.h.
 //
 // Ownership: an H2libHandle owns the cluster trees, index arrays and hmatrix of one import,

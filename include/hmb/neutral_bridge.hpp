@@ -1,4 +1,4 @@
-// hmatrix-bridges: any neutral view as a BlackBox or an EntrySource.
+// move-hmatrix: any neutral view as a BlackBox or an EntrySource.
 //
 // With these, the output of any exporter can feed the rebuild routes (an importer that
 // takes entries or matvecs) even when no block-copy importer exists for the destination,

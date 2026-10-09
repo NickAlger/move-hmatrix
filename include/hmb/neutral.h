@@ -1,4 +1,4 @@
-/* hmatrix-bridges: neutral in-memory view of an H-matrix.
+/* move-hmatrix: neutral in-memory view of an H-matrix.
  *
  * An exporter fills an hmb_hmatrix that points into the source library's storage
  * (or into copies it owns); an importer reads it and builds its own structures.

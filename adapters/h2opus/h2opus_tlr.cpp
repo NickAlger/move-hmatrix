@@ -1,4 +1,4 @@
-// hmatrix-bridges: H2Opus TLR adapter (see hmb_h2opus_tlr.hpp): import, construction from
+// move-hmatrix: H2Opus TLR adapter (see hmb_h2opus_tlr.hpp): import, construction from
 // entries, export and products of TTLR_Matrix<double, CPU>.
 #include "h2opus_tlr_native.hpp"
 #include "hmb/neutral_store.hpp"

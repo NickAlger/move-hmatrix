@@ -1,4 +1,4 @@
-// hmatrix-bridges: H2Opus adapter, H^2 from matvecs with HARA, and hgemv in the original
+// move-hmatrix: H2Opus adapter, H^2 from matvecs with HARA, and hgemv in the original
 // ordering. Conventions and the gotchas handled here: hmb_h2opus.hpp, h2opus_native.hpp.
 #include "h2opus_native.hpp"
 
@@ -16,7 +16,7 @@ namespace {
 
 // GOTCHA(scalar-type): H2Opus picks its precision at build time (h2opusconf.h).
 static_assert(std::is_same<H2Opus_Real, double>::value,
-              "hmatrix-bridges needs H2Opus built in double precision (H2OPUS_USE_DOUBLE_PRECISION)");
+              "move-hmatrix needs H2Opus built in double precision (H2OPUS_USE_DOUBLE_PRECISION)");
 
 double wall() {
     return std::chrono::duration<double>(std::chrono::steady_clock::now().time_since_epoch()).count();

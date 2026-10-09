@@ -1,4 +1,4 @@
-// hmatrix-bridges: H2Opus TLR adapter, native side (includes H2Opus headers).
+// move-hmatrix: H2Opus TLR adapter, native side (includes H2Opus headers).
 //
 // For code that builds or consumes TTLR_Matrix objects itself; code that only moves
 // matrices between libraries should include hmb_h2opus_tlr.hpp instead. Do not include it in

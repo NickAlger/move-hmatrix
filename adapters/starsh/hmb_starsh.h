@@ -1,4 +1,4 @@
-/* hmatrix-bridges: STARS-H adapter, library-neutral C interface.
+/* move-hmatrix: STARS-H adapter, library-neutral C interface.
  *
  * What it does
  *   hmb_starsh_import        neutral view (hmb_hmatrix) -> STARS-H block low-rank matrix

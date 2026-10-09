@@ -1,4 +1,4 @@
-// hmatrix-bridges: Htool-DDM adapter, library-neutral interface.
+// move-hmatrix: Htool-DDM adapter, library-neutral interface.
 //
 // Includes no Htool header, so it can be used in the same translation unit as any other
 // adapter (Htool's BLAS prototypes clash with H2Opus's; see GOTCHAS.md). The Htool types

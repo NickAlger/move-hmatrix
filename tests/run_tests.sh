@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# hmatrix-bridges test runner: ./tests/run_tests.sh <executable or script> ...
+# move-hmatrix test runner: ./tests/run_tests.sh <executable or script> ...
 #
 # A check passes when it exits with status 0 AND prints a line starting with
 # HMB_TEST_PASSED. Both are required: ButterflyPACK ends the process with a Fortran STOP

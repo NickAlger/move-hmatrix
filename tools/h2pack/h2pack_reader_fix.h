@@ -1,4 +1,4 @@
-/* hmatrix-bridges: link-time fix for H2Pack's file reader (GOTCHA(h2pack-reader-bugs)).
+/* move-hmatrix: link-time fix for H2Pack's file reader (GOTCHA(h2pack-reader-bugs)).
  *
  * The bug (H2Pack 2aa58a6, H2Pack_file_IO.c:744-745): H2P_read_from_file computes ONE
  * bounding box for all points (H2P_calc_enclosing_box) and then calls

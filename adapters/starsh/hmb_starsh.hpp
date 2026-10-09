@@ -1,4 +1,4 @@
-// hmatrix-bridges: STARS-H adapter, C++ conveniences over hmb_starsh.h: a handle with shared
+// move-hmatrix: STARS-H adapter, C++ conveniences over hmb_starsh.h: a handle with shared
 // ownership, exceptions, an EntrySource route in and a BlackBox route out. Includes no STARS-H
 // header. Conventions, partitions and limits: hmb_starsh.h. Tested, like hmb_starsh.h, against
 // STARS-H commit c115e75 (OpenMP backend).

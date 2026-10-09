@@ -1,4 +1,4 @@
-// hmatrix-bridges: H2Opus adapter (HARA), native side (includes H2Opus headers).
+// move-hmatrix: H2Opus adapter (HARA), native side (includes H2Opus headers).
 //
 // For code that goes on from a matrix built by h2opus_from_matvec to H2Opus's own
 // operations (hgemv, hcompress, hlru_*, a copy to the GPU, ...). Code that only moves

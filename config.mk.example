@@ -1,4 +1,4 @@
-# hmatrix-bridges configuration template.
+# move-hmatrix configuration template.
 #
 # The Makefile reads ./config.mk when it exists, otherwise deps/install/config.mk (written by
 # deps/build_deps.sh for the pinned builds; it explains every flag of those builds). To point the

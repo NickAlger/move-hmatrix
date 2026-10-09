@@ -1,4 +1,4 @@
-// hmatrix-bridges: hmat-oss adapter, library-neutral interface.
+// move-hmatrix: hmat-oss adapter, library-neutral interface.
 //
 // What it does
 //   - hmatoss_build:    assemble an hmat-oss H-matrix from any EntrySource (ACA+).

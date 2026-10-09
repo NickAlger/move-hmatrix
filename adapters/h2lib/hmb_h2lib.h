@@ -1,4 +1,4 @@
-/* hmatrix-bridges: H2Lib adapter, library-neutral C interface.
+/* move-hmatrix: H2Lib adapter, library-neutral C interface.
  *
  * Moves H-matrices between the neutral view (hmb/neutral.h) and H2Lib, converts them to H2
  * inside H2Lib, and multiplies H2Lib matrices in the ORIGINAL (user) ordering. Includes no

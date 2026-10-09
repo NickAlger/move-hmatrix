@@ -1,4 +1,4 @@
-// hmatrix-bridges: hmat-oss adapter, native side (includes hmat/hmat.h).
+// move-hmatrix: hmat-oss adapter, native side (includes hmat/hmat.h).
 //
 // For code that already holds hmat-oss objects: hmatoss_wrap turns an hmat_interface_t +
 // hmat_matrix_t pair into an HmatossHandle usable with every function of hmb_hmatoss.hpp,

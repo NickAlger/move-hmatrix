@@ -1,4 +1,4 @@
-// hmatrix-bridges: H2Opus adapter (H^2 from matvecs with HARA), library-neutral interface.
+// move-hmatrix: H2Opus adapter (H^2 from matvecs with HARA), library-neutral interface.
 //
 // Rebuilds a SYMMETRIC real operator given as a black box (hmb::BlackBox) as an H2Opus H^2
 // matrix with HARA, H2Opus's hierarchical adaptive randomized approximation, on a structure

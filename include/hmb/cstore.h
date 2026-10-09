@@ -1,4 +1,4 @@
-/* hmatrix-bridges: growable owner behind an hmb_hmatrix view, for code written in C
+/* move-hmatrix: growable owner behind an hmb_hmatrix view, for code written in C
  * (exporters and file parsers). C++ code can use hmb::NeutralStore instead.
  *
  * Usage:

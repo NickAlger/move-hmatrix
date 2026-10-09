@@ -1,4 +1,4 @@
-/* hmatrix-bridges: H2Lib adapter (see hmb_h2lib.h). The only translation unit of the
+/* move-hmatrix: H2Lib adapter (see hmb_h2lib.h). The only translation unit of the
  * package that includes H2Lib's headers (GOTCHA(header-clash)). */
 #include "hmb_h2lib.h"
 
@@ -24,7 +24,7 @@
 /* GOTCHA(scalar-type): H2Lib fixes its scalar type per build (USE_COMPLEX, USE_FLOAT); the
  * neutral form is real double. */
 _Static_assert(sizeof(field) == sizeof(double) && sizeof(real) == sizeof(double),
-               "hmatrix-bridges needs H2Lib built for real double precision (no USE_COMPLEX, no USE_FLOAT)");
+               "move-hmatrix needs H2Lib built for real double precision (no USE_COMPLEX, no USE_FLOAT)");
 
 static int fail(char *msg, size_t len, int code, const char *fmt, ...) {
   if (msg && len) {

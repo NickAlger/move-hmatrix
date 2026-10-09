@@ -1,6 +1,6 @@
 # Pinned third-party builds
 
-`deps/build_deps.sh` fetches the seven libraries hmatrix-bridges connects, at the commits pinned
+`deps/build_deps.sh` fetches the seven libraries move-hmatrix connects, at the commits pinned
 in `deps/versions.txt`, builds each one the way the package uses it, installs it under
 `deps/install/<id>` and writes `deps/install/config.mk`. The top-level Makefile reads that file
 whenever there is no top-level `config.mk`, so a fresh checkout needs:

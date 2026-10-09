@@ -1,4 +1,4 @@
-/* hmatrix-bridges: hmb_cstore implementation (see include/hmb/cstore.h). */
+/* move-hmatrix: hmb_cstore implementation (see include/hmb/cstore.h). */
 #include "hmb/cstore.h"
 
 #include <limits.h>

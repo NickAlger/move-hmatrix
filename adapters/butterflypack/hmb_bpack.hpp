@@ -1,4 +1,4 @@
-// hmatrix-bridges: ButterflyPACK adapter, library-neutral interface.
+// move-hmatrix: ButterflyPACK adapter, library-neutral interface.
 //
 // Rebuilds a square real matrix in ButterflyPACK from a black-box operator (hmb::BlackBox,
 // the matvec route) or from an entry oracle (hmb::EntrySource, the entry route), factors it

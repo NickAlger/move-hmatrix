@@ -1,4 +1,4 @@
-// hmatrix-bridges test and example harness (not part of the library API).
+// move-hmatrix test and example harness (not part of the library API).
 //
 // Test problems, timers, error measures, memory probes and the pass sentinel shared by
 // tests/ and examples/. Header-only; includes no third-party library.

@@ -1,4 +1,4 @@
-// hmatrix-bridges: feed any EntrySource to Htool-DDM's compressor.
+// move-hmatrix: feed any EntrySource to Htool-DDM's compressor.
 // Htool's VirtualGenerator uses the same convention as EntrySource (user ordering,
 // 0-based, column-major M x N), so no index translation is needed.
 #pragma once

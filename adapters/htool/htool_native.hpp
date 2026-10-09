@@ -1,4 +1,4 @@
-// hmatrix-bridges: Htool-DDM adapter, native side (includes Htool headers).
+// move-hmatrix: Htool-DDM adapter, native side (includes Htool headers).
 //
 // Use this header in code that already builds or consumes htool::HMatrix objects; code
 // that only moves matrices between libraries should include hmb_htool.hpp instead. Do not

@@ -1,4 +1,4 @@
-# hmatrix-bridges: top-level Makefile (GNU make).
+# move-hmatrix: top-level Makefile (GNU make).
 #
 #   make            build libhmb.a and every adapter, example and test whose libraries
 #                   are configured, and one archive per adapter (build/lib/libhmb_<lib>.a)

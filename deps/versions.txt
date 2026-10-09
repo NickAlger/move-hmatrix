@@ -1,4 +1,4 @@
-# hmatrix-bridges: pinned third-party libraries. deps/build_deps.sh reads the repository and
+# move-hmatrix: pinned third-party libraries. deps/build_deps.sh reads the repository and
 # commit of each line from this file, checks out exactly that commit and verifies it (and the
 # commit date given here). To move a library to another commit, edit its line and re-run the
 # script: the library is rebuilt, and deps/README.md says what to re-check.

@@ -1,4 +1,4 @@
-// hmatrix-bridges: hmat-oss adapter (build from entries, wrap, entries, matvec, statistics,
+// move-hmatrix: hmat-oss adapter (build from entries, wrap, entries, matvec, statistics,
 // structure stream parser). Block copy is in hmb_hmatoss_copy.cpp.
 #include "hmatoss_stream.hpp"
 

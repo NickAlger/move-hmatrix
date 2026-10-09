@@ -1,4 +1,4 @@
-// hmatrix-bridges: Htool-DDM import from the neutral view, native side (includes Htool).
+// move-hmatrix: Htool-DDM import from the neutral view, native side (includes Htool).
 //
 // hmb::htool_import (hmb_htool_copy.hpp) returns the trees and the matrix in an HtoolHandle,
 // whose fields htool_native.hpp exposes. This header adds the cluster-tree half on its own,

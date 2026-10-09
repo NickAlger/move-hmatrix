@@ -1,4 +1,4 @@
-/* hmatrix-bridges: reference implementations of the neutral-view utilities (neutral.h).
+/* move-hmatrix: reference implementations of the neutral-view utilities (neutral.h).
  * Simple and checked rather than tuned; products go through the Fortran BLAS dgemm. */
 #include "hmb/neutral.h"
 
@@ -25,7 +25,7 @@ static void gemm(char ta, char tb, int m, int n, int k, double alpha, const doub
 static void *xmalloc(size_t n) {
   void *p = malloc(n ? n : 1);
   if (!p) {
-    fprintf(stderr, "hmatrix-bridges: out of memory (%zu bytes)\n", n);
+    fprintf(stderr, "move-hmatrix: out of memory (%zu bytes)\n", n);
     abort();
   }
   return p;
@@ -34,7 +34,7 @@ static void *xmalloc(size_t n) {
 static void *xcalloc(size_t n, size_t size) {
   void *p = calloc(n ? n : 1, size ? size : 1);
   if (!p) {
-    fprintf(stderr, "hmatrix-bridges: out of memory (%zu x %zu bytes)\n", n, size);
+    fprintf(stderr, "move-hmatrix: out of memory (%zu x %zu bytes)\n", n, size);
     abort();
   }
   return p;

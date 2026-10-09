@@ -1,4 +1,4 @@
-// hmatrix-bridges: H2Opus tile low-rank (TLR) adapter, library-neutral interface.
+// move-hmatrix: H2Opus tile low-rank (TLR) adapter, library-neutral interface.
 //
 // What it does
 //   - h2opus_tlr_import:       neutral view of a uniform tile partition -> H2Opus TTLR_Matrix

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# deps/build_deps.sh: fetch, build and install the third-party libraries of hmatrix-bridges at
+# deps/build_deps.sh: fetch, build and install the third-party libraries of move-hmatrix at
 # the commits pinned in deps/versions.txt, write <prefix>/config.mk for the top-level Makefile
 # (it reads deps/install/config.mk when there is no top-level config.mk), and check that file
 # by compiling, linking and running one small program per library.
@@ -31,7 +31,7 @@ usage() {
 Usage: deps/build_deps.sh [options]
 
 Fetches the libraries pinned in deps/versions.txt (git clone + checkout of the exact commit,
-submodules at their recorded revisions), builds them the way hmatrix-bridges uses them, installs
+submodules at their recorded revisions), builds them the way move-hmatrix uses them, installs
 them under the prefix and writes <prefix>/config.mk. A library already built at its pinned commit
 with the same options is skipped. Finally every configured library is checked with a small
 program compiled and linked through config.mk (log: deps/build/smoke.log).
@@ -308,7 +308,7 @@ build_h2lib() {
     # The study's options.inc (BRIEF_OUTPUT off so that this log shows the compile commands).
     # Without a system.inc, H2Lib's Makefile uses system.inc.linux.
     cat > "$b/options.inc" <<'EOF'
-# H2Lib build options written by hmatrix-bridges' deps/build_deps.sh
+# H2Lib build options written by move-hmatrix' deps/build_deps.sh
 OPT=1
 USE_BLAS=1
 USE_OPENMP=1
@@ -443,7 +443,7 @@ build_h2opus() {
     # H2Opus's make with our make.inc (variables from the environment could switch on GPU/MKL/MPI)
     unset H2OPUS_USE_GPU H2OPUS_USE_MPI H2OPUS_USE_MKL H2OPUS_USE_SINGLE_PRECISION MKLROOT
     cat > "$b/make.inc" <<EOF
-# H2Opus build options written by hmatrix-bridges' deps/build_deps.sh: CPU only, double precision,
+# H2Opus build options written by move-hmatrix' deps/build_deps.sh: CPU only, double precision,
 # the study's compiler flags (no -DH2OPUS_PROFILING_ENABLED).
 CXX = $CXX
 CXXFLAGS = -O2 -fopenmp -std=c++14 -fPIC -w
@@ -626,7 +626,7 @@ for id in "${SELECTED[@]}"; do
         set +x
         for f in $(artifacts "$id"); do [ -e "$PREFIX/$f" ] || { echo "missing after install: $PREFIX/$f"; exit 1; }; done
         {
-            echo "# Build record of ${PIN_NAME[$id]} for hmatrix-bridges, written by deps/build_deps.sh."
+            echo "# Build record of ${PIN_NAME[$id]} for move-hmatrix, written by deps/build_deps.sh."
             echo "# The script skips this library while 'signature' matches the pins and options."
             for r in $(repos_of "$id"); do
                 echo "repository: $r ${PIN_URL[$r]} ${PIN_COMMIT[$r]} ($(commit_date "$r"); $(commit_branches "$r"))"
@@ -659,7 +659,7 @@ CONFIG=$PREFIX/config.mk
 STALE=()
 {
     cat <<EOF
-# hmatrix-bridges configuration for the pinned dependency builds under this directory.
+# move-hmatrix configuration for the pinned dependency builds under this directory.
 # Written by deps/build_deps.sh on $(date -u '+%Y-%m-%d %H:%M UTC'); re-run the script rather than
 # editing it. The top-level Makefile reads this file when there is no top-level config.mk; to use
 # other builds, copy config.mk.example to config.mk and edit that. Commits, licences and build

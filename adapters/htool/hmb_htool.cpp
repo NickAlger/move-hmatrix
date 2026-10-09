@@ -1,4 +1,4 @@
-// hmatrix-bridges: Htool-DDM adapter (build from entries, matvec, statistics).
+// move-hmatrix: Htool-DDM adapter (build from entries, matvec, statistics).
 #include "htool_native.hpp"
 
 #include <htool/clustering/tree_builder/tree_builder.hpp>

@@ -1,4 +1,4 @@
-// hmatrix-bridges: ButterflyPACK adapter (rebuild from matvecs or entries, matvec, exit
+// move-hmatrix: ButterflyPACK adapter (rebuild from matvecs or entries, matvec, exit
 // diagnostics). Conventions and the gotchas handled here: hmb_bpack.hpp, bpack_native.hpp.
 #include "bpack_native.hpp"
 
@@ -75,7 +75,7 @@ void stop_handler() {
     case Activity::Solve: std::snprintf(what, sizeof what, "solves with %s %s matrix", article, format); break;
     }
     std::fprintf(stderr,
-                 "\nhmatrix-bridges: the process is exiting while ButterflyPACK %s\n"
+                 "\nmove-hmatrix: the process is exiting while ButterflyPACK %s\n"
                  "  (%s: n = %d, tolerance %g, leaf_size %d, rank0 %d, rankrate %g, itermax %d).\n",
                  what, c->function, c->n, o.tolerance, o.leaf_size, o.rank0, o.rankrate, o.itermax);
     if (c->activity == Activity::BuildMatvec)

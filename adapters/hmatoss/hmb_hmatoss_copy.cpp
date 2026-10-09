@@ -1,4 +1,4 @@
-// hmatrix-bridges: hmat-oss block copy through its serialization stream (export to and import
+// move-hmatrix: hmat-oss block copy through its serialization stream (export to and import
 // from the neutral view). Stream format: hmatoss_stream.hpp.
 #include "hmatoss_stream.hpp"
 #include "hmb/neutral_store.hpp"

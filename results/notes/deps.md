@@ -259,13 +259,13 @@ same results.
 ## 9. The config.mk written (deps/install/config.mk)
 
 ```make
-# hmatrix-bridges configuration for the pinned dependency builds under this directory.
+# move-hmatrix configuration for the pinned dependency builds under this directory.
 # Written by deps/build_deps.sh on 2026-10-09 06:21 UTC; re-run the script rather than
 # editing it. The top-level Makefile reads this file when there is no top-level config.mk; to use
 # other builds, copy config.mk.example to config.mk and edit that. Commits, licences and build
 # options of every library: deps/versions.txt; per-library build records: <id>/BUILD_INFO.
 
-DEPS_PREFIX := /root/hmatrix-bridges/deps/install
+DEPS_PREFIX := /root/move-hmatrix/deps/install
 
 # ---- toolchain ----------------------------------------------------------------------------------
 # The compilers that built the libraries below. Keep them for the package: C++ ABI (H2Opus, hmat-oss),
